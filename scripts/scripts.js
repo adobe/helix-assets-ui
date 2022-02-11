@@ -478,6 +478,15 @@ document.addEventListener('click', () => sampleRUM('click'));
 
 loadPage(document);
 
+window.addURLStateChangeListener = (listener) => {
+  window.stateChangeListeners = [...(window.stateChangeListeners || []), listener];
+};
+
+window.changeURLState = (state, url) => {
+  window.history.pushState(state, '', url);
+  (window.stateChangeListeners || []).forEach((listener) => listener(state, url));
+};
+
 function buildHeroBlock(main) {
   const h1 = main.querySelector('h1');
   const picture = main.querySelector('picture');
