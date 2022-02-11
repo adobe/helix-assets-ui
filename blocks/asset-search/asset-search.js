@@ -11,7 +11,7 @@ export default function decorate(block) {
 
     const myurl = new URL(window.location.href);
     myurl.searchParams.set('q', textfield.value);
-    window.history.pushState({ query: textfield.value }, myurl.href);
+    window.history.pushState({ query: textfield.value }, '', myurl.href);
 
     fetch(url.href).then(async (res) => window.results
       && window.results.showResults(await res.json()));
