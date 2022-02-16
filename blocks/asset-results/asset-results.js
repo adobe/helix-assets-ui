@@ -48,7 +48,6 @@ export default function decorate(block) {
       this.setup(window.innerWidth);
 
       const items = [...this.list.children].slice(this.masonry.querySelectorAll('.asset-results-masonry-item').length);
-      console.log(items.length);
       let add = true;
       items.forEach((result) => {
         const img = result.querySelector('img');
@@ -93,7 +92,6 @@ export default function decorate(block) {
     masonry.textContent = '';
 
     results.hits.forEach((hit) => {
-      console.log(hit);
       const item = document.createElement('li');
       const topurl = new URL(hit.topurl);
       const picture = createOptimizedPicture(`https://${topurl.hostname}${topurl.pathname}/media_${hit.objectID}.png?width=750`, hit.caption, false, [{ width: '750' }]);
