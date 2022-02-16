@@ -12,6 +12,7 @@ export default function decorate(block) {
 
   // enable autocompletion
   textfield.setAttribute('list', datalist.id);
+  textfield.setAttribute('placeholder', 'type to search');
 
   // update the URL when the input changes
   textfield.addEventListener('input', () => {
@@ -38,7 +39,7 @@ export default function decorate(block) {
       });
     });
   });
-
-  block.replaceWith(textfield);
+  block.textContent = '';
+  block.append(textfield);
   textfield.after(datalist);
 }
