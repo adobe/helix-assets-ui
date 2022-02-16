@@ -18,5 +18,5 @@ main .asset-search input {
 }
 
 main .asset-search input::placeholder {
-    color: #ffffff80;
+    color: rgba(var(--text-color) / 50%);
 }
