@@ -10,6 +10,9 @@ export default function decorate(block) {
   const datalist = document.createElement('datalist');
   datalist.id = 'query-suggestions';
 
+  // enable autocompletion
+  textfield.setAttribute('list', datalist.id);
+
   // update the URL when the input changes
   textfield.addEventListener('input', () => {
     const myurl = new URL(window.location.href);
@@ -33,8 +36,6 @@ export default function decorate(block) {
         option.innerHTML = hit.query;
         datalist.append(option);
       });
-      // enable autocompletion if there are options
-      textfield.setAttribute('list', datalist.id);
     });
   });
 
