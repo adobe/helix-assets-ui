@@ -15,6 +15,7 @@ main .asset-search {
 
 main .asset-search input {
     margin: auto;
+    color: white;
 }
 
 main .asset-search input::placeholder {
