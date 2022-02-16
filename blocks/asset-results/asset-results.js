@@ -12,11 +12,13 @@ export default function decorate(block) {
     list.innerHTML = '';
 
     results.hits.forEach((hit) => {
+      console.log(hit);
       const item = document.createElement('li');
       const topurl = new URL(hit.topurl);
       item.innerHTML = `
-        <img src="https://${topurl.hostname}${topurl.pathname}/${hit.target}.png?width=200">
-        Source: <a href="${hit.topurl}">${hit.topurl}</a> (and ${hit.pages} other pages)
+        <img src="https://${topurl.hostname}${topurl.pathname}/media_${hit.objectID}.png?width=200">
+        <p class="caption">${hit.caption}</p>
+        <p class="source"><a href="${hit.topurl}">${hit.topurl}</a></p>
       `;
       list.appendChild(item);
     });
