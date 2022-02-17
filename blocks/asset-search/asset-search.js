@@ -12,7 +12,7 @@ export default function decorate(block) {
 
   // enable autocompletion
   textfield.setAttribute('list', datalist.id);
-  textfield.setAttribute('placeholder', 'type to search');
+  textfield.setAttribute('placeholder', 'type or drag to search');
 
   textfield.addEventListener('drop', async (e) => {
     // image similarity search
