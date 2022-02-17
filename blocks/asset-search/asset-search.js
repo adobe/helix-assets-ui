@@ -14,6 +14,41 @@ export default function decorate(block) {
   textfield.setAttribute('list', datalist.id);
   textfield.setAttribute('placeholder', 'type to search');
 
+  textfield.addEventListener('drop', async (e) => {
+    // image similarity search
+    e.preventDefault();
+    // console.log('dropped', e.dataTransfer.getData('url'));
+
+    const imagebitmap = await createImageBitmap(e.dataTransfer.files.item(0), {
+      resizeWidth: 500,
+    });
+    const canvas = document.createElement('canvas');
+    canvas.style.display = 'none';
+    canvas.width = imagebitmap.width;
+    canvas.height = imagebitmap.height;
+    block.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(imagebitmap, 0, 0);
+    const upload = canvas.toDataURL();
+    canvas.remove();
+    const data = new URLSearchParams();
+    data.set('upload', upload);
+    const res = await fetch('https://helix-pages.anywhere.run/helix-services/asset-ingestor@v1', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/x-www-form-urlencoded; charset=utf-8',
+      },
+      body: data.toString(),
+    });
+    const resdata = await res.json();
+    if (resdata.result.length) {
+      textfield.value = resdata.result[0].filepath;
+      const myurl = new URL(window.location.href);
+      myurl.searchParams.set('q', textfield.value);
+      window.changeURLState({ query: textfield.value }, myurl.href);
+    }
+  });
+
   // update the URL when the input changes
   textfield.addEventListener('input', () => {
     const myurl = new URL(window.location.href);
