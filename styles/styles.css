@@ -115,6 +115,7 @@ main input, main button {
   margin-bottom: 1rem;
   padding: 0.75rem 0.6rem;    
   border-radius: 0.25rem;
+  box-sizing: border-box;
 }
 
 main button {
