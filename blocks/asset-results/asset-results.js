@@ -93,7 +93,7 @@ export default function decorate(block) {
 
     results.hits.forEach((hit) => {
       const item = document.createElement('li');
-      const topurl = new URL(hit.topurl);
+      const topurl = new URL(hit.topurl || hit.image);
       const picture = createOptimizedPicture(`https://${topurl.hostname}${topurl.pathname}/media_${hit.objectID}.png?width=750`, hit.caption, false, [{ width: '750' }]);
       item.innerHTML = `
         ${picture.outerHTML}
