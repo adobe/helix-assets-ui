@@ -71,6 +71,9 @@ export default function decorate(block) {
   }
 
   function humanSize(size) {
+    if (!size) {
+      return 'unknown';
+    }
     let number = size;
     const thresh = 1000;
     if (Math.abs(size) < thresh) {
@@ -93,13 +96,15 @@ export default function decorate(block) {
 
     results.hits.forEach((hit) => {
       const item = document.createElement('li');
-      const topurl = new URL(hit.topurl || hit.image);
-      const picture = createOptimizedPicture(`https://${topurl.hostname}${topurl.pathname}/media_${hit.objectID}.png?width=750`, hit.caption, false, [{ width: '750' }]);
+      const topurl = new URL(hit.topurl || hit.sourceURL || hit.image);
+      const imageURL = new URL(hit.image);
+      imageURL.searchParams.set('width', 750);
+      const picture = createOptimizedPicture(imageURL.href, hit.caption, false, [{ width: '750' }]);
       item.innerHTML = `
         ${picture.outerHTML}
-        <div class="asset-results-details">
+        <div class="asset-results-details source-${hit.sourceType}">
           <p class="asset-results-caption">${hit.caption}</p>
-          <p class="asset-results-source"><a href="${hit.topurl}">${topurl.hostname}</a></p>
+          <p class="asset-results-source"><a href="${topurl.href}">${hit.sourceDomain}</a></p>
           <p class="asset-results-views">${humanSize(hit.views)}</p>
           <p class="asset-results-dimensions">${hit.height} x ${hit.width}</p>
           <p class="asset-results-tags"><span>${hit.tags.join('</span> <span>')}</span></p>
