@@ -4,7 +4,7 @@ export default function decorate(block) {
   window.results = block;
 
   const counter = document.createElement('div');
-  counter.className = 'asset-results-counter';
+  counter.className = 'asset-results-controls';
   block.appendChild(counter);
 
   const list = document.createElement('ol');
@@ -13,6 +13,10 @@ export default function decorate(block) {
   const masonry = document.createElement('div');
   masonry.className = 'asset-results-masonry';
   block.appendChild(masonry);
+
+  const grid = document.createElement('div');
+  grid.className = 'asset-results-grid hidden';
+  block.append(grid);
 
   class Masonry {
     constructor(listEl, masonryEl) {
@@ -89,10 +93,22 @@ export default function decorate(block) {
     return `${number.toFixed()} ${units[u]}`;
   }
 
-  const showResults = (results) => {
-    counter.innerHTML = `${results.nbHits} hits`;
+  const showResults = (results, type) => {
+    counter.innerHTML = `<div class="asset-results-heading"><img src="/blocks/asset-results/filter.svg">Assets & Files (${results.nbHits})</div>
+  <div class="asset-results-view-switcher assets-results-view-masonry"></div>`;
     list.textContent = '';
-    masonry.textContent = '';
+    const switcher = block.querySelector('.asset-results-view-switcher');
+    switcher.addEventListener('click', () => {
+      if (switcher.classList.contains('assets-results-view-grid')) {
+        switcher.classList.remove('assets-results-view-grid');
+        switcher.classList.add('assets-results-view-masonry');
+      } else {
+        switcher.classList.add('assets-results-view-grid');
+        switcher.classList.remove('assets-results-view-masonry');
+      }
+      grid.classList.toggle('hidden');
+      masonry.classList.toggle('hidden');
+    });
 
     results.hits.forEach((hit) => {
       const item = document.createElement('li');
@@ -112,8 +128,12 @@ export default function decorate(block) {
       `;
       list.appendChild(item);
     });
+
+    masonry.textContent = '';
     const m = new Masonry(list, masonry);
-    m.update();
+    m.update();  
+
+    grid.append(list);
   };
 
   const search = () => {
@@ -125,7 +145,7 @@ export default function decorate(block) {
     url.searchParams.set('x-algolia-api-key', 'bd35440a1d9feb709a052226f1aa70d8');
     url.searchParams.set('x-algolia-application-id', 'SWFXY1CU7X');
 
-    fetch(url.href).then(async (res) => showResults(await res.json()));
+    fetch(url.href).then(async (res) => showResults(await res.json(), 'masonry'));
   };
 
   window.addURLStateChangeListener(search);

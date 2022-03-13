@@ -1,69 +1,78 @@
-import { readBlockConfig } from '../../scripts/scripts.js';
-
-/**
- * collapses all open nav sections
- * @param {Element} sections The container element
- */
-
-function collapseAllNavSections(sections) {
-  sections.querySelectorAll('.nav-section').forEach((section) => {
-    section.setAttribute('aria-expanded', 'false');
-  });
-}
-
-/**
- * decorates the header, mainly the nav
- * @param {Element} block The header block element
- */
-
 export default async function decorate(block) {
-  const cfg = readBlockConfig(block);
-  block.textContent = '';
+  block.innerHTML = '<div class="header-brand"><img src="/styles/adobe.svg">Helix Assets</div><div class="header-input"><span><input placeholder="Landscape Type to search..."></span></div><div class="header-button"><button class="secondary">Done</button></div>';
+  
+  const textfield = block.querySelector('input');
+  
+  if (new URL(window.location.href).searchParams.has('q')) {
+    textfield.value = new URL(window.location.href).searchParams.get('q');
+  }
 
-  // fetch nav content
-  const navPath = cfg.nav || '/nav';
-  const resp = await fetch(`${navPath}.plain.html`);
-  const html = await resp.text();
+  const datalist = document.createElement('datalist');
+  datalist.id = 'query-suggestions';
 
-  // decorate nav DOM
-  const nav = document.createElement('div');
-  nav.classList.add('nav');
-  nav.setAttribute('aria-role', 'navigation');
-  const navSections = document.createElement('div');
-  navSections.classList.add('nav-sections');
-  nav.innerHTML = html;
-  nav.querySelectorAll(':scope > div').forEach((navSection, i) => {
-    if (!i) {
-      // first section is the brand section
-      const brand = navSection;
-      brand.classList.add('nav-brand');
-    } else {
-      // all other sections
-      navSections.append(navSection);
-      navSection.classList.add('nav-section');
-      const h2 = navSection.querySelector('h2');
-      if (h2) {
-        h2.addEventListener('click', () => {
-          const expanded = navSection.getAttribute('aria-expanded') === 'true';
-          collapseAllNavSections(navSections);
-          navSection.setAttribute('aria-expanded', expanded ? 'false' : 'true');
-        });
-      }
+  // enable autocompletion
+  textfield.setAttribute('list', datalist.id);
+  textfield.setAttribute('placeholder', 'type or drag to search');
+  
+  textfield.addEventListener('drop', async (e) => {
+    // image similarity search
+    e.preventDefault();
+    // console.log('dropped', e.dataTransfer.getData('url'));
+
+    const imagebitmap = await createImageBitmap(e.dataTransfer.files.item(0), {
+      resizeWidth: 500,
+    });
+    const canvas = document.createElement('canvas');
+    canvas.style.display = 'none';
+    canvas.width = imagebitmap.width;
+    canvas.height = imagebitmap.height;
+    block.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(imagebitmap, 0, 0);
+    const upload = canvas.toDataURL();
+    canvas.remove();
+    const data = new URLSearchParams();
+    data.set('upload', upload);
+    const res = await fetch('https://helix-pages.anywhere.run/helix-services/asset-ingestor@v1', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/x-www-form-urlencoded; charset=utf-8',
+      },
+      body: data.toString(),
+    });
+    const resdata = await res.json();
+    if (resdata.result.length) {
+      textfield.value = resdata.result[0].filepath;
+      const myurl = new URL(window.location.href);
+      myurl.searchParams.set('q', textfield.value);
+      window.changeURLState({ query: textfield.value }, myurl.href);
     }
   });
-  nav.append(navSections);
 
-  // hamburger for mobile
-  const hamburger = document.createElement('div');
-  hamburger.classList.add('nav-hamburger');
-  hamburger.innerHTML = '<div class="nav-hamburger-icon"></div>';
-  hamburger.addEventListener('click', () => {
-    const expanded = nav.getAttribute('aria-expanded') === 'true';
-    document.body.style.overflowY = expanded ? '' : 'hidden';
-    nav.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+  // update the URL when the input changes
+  textfield.addEventListener('input', () => {
+    const myurl = new URL(window.location.href);
+    myurl.searchParams.set('q', textfield.value);
+    window.changeURLState({ query: textfield.value }, myurl.href);
+
+    const query = myurl.searchParams.get('q');
+
+    const url = new URL('https://SWFXY1CU7X-dsn.algolia.net/1/indexes/assets_query_suggestions');
+    url.searchParams.set('query', query);
+    url.searchParams.set('x-algolia-api-key', 'bd35440a1d9feb709a052226f1aa70d8');
+    url.searchParams.set('x-algolia-application-id', 'SWFXY1CU7X');
+
+    fetch(url.href).then(async (res) => {
+      const { hits } = await res.json();
+      if (hits.length) {
+        datalist.innerHTML = '';
+      }
+      hits.forEach((hit) => {
+        const option = document.createElement('option');
+        option.innerHTML = hit.query;
+        datalist.append(option);
+      });
+    });
   });
-  nav.prepend(hamburger);
-  nav.setAttribute('aria-expanded', 'false');
-
-  block.append(nav);
+  textfield.after(datalist);
 }

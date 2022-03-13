@@ -11,6 +11,7 @@ main .asset-search {
     max-width: 800px;
     margin: auto;
     padding: 50px 1rem;
+    display: none;
 }
 
 main .asset-search input {
