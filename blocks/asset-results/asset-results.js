@@ -119,7 +119,7 @@ export default function decorate(block) {
       item.innerHTML = `
         ${picture.outerHTML}
         <div class="asset-results-details source-${hit.sourceType}">
-          <p class="asset-results-caption">${hit.caption} ${hit.objectID} ${hit.assetID}</p>
+          <p class="asset-results-caption">${hit.caption}</p>
           <p class="asset-results-source"><a href="${topurl.href}">${hit.sourceDomain}</a></p>
           <p class="asset-results-views">${humanSize(hit.views)}</p>
           <p class="asset-results-dimensions">${hit.height} x ${hit.width}</p>
@@ -140,13 +140,19 @@ export default function decorate(block) {
     const myurl = new URL(window.location.href);
     const query = myurl.searchParams.get('q');
 
+    const terms = query.split(' ');
+    const filters = terms.filter((term) => term.match(':')).join(' AND ');
+    const words = terms.filter((term) => !term.match(':')).join(' ');
+
     const url = new URL('https://SWFXY1CU7X-dsn.algolia.net/1/indexes/assets');
-    url.searchParams.set('query', query);
+    url.searchParams.set('query', words);
     url.searchParams.set('x-algolia-api-key', 'bd35440a1d9feb709a052226f1aa70d8');
     url.searchParams.set('x-algolia-application-id', 'SWFXY1CU7X');
     // only one objectID per assetID
     // (search for "a person wearing sunglasses" for test)
     url.searchParams.set('distinct', 'true');
+    // set filters
+    url.searchParams.set('filters', filters);
 
     fetch(url.href).then(async (res) => showResults(await res.json(), 'masonry'));
   };
