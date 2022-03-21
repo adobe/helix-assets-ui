@@ -131,21 +131,21 @@ export default function decorate(block) {
 
     masonry.textContent = '';
     const m = new Masonry(list, masonry);
-    m.update();  
+    m.update();
 
     grid.append(list);
   };
 
   const search = () => {
     const myurl = new URL(window.location.href);
-    const query = myurl.searchParams.get('q');
+    const query = myurl.searchParams.get('q') || '';
     const index = myurl.searchParams.get('index') || 'assets';
 
     const terms = query.split(' ');
     const filters = terms.filter((term) => term.match(':')).join(' AND ');
     const words = terms.filter((term) => !term.match(':')).join(' ');
 
-    const url = new URL('https://SWFXY1CU7X-dsn.algolia.net/1/indexes/' + index);
+    const url = new URL(`https://SWFXY1CU7X-dsn.algolia.net/1/indexes/${index}`);
     url.searchParams.set('query', words);
     url.searchParams.set('x-algolia-api-key', 'bd35440a1d9feb709a052226f1aa70d8');
     url.searchParams.set('x-algolia-application-id', 'SWFXY1CU7X');
