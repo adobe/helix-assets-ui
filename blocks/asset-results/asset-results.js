@@ -125,7 +125,7 @@ export default function decorate(block) {
           <p class="asset-results-source"><a href="${topurl.href}">${hit.sourceDomain}</a></p>
           <p class="asset-results-views">${humanSize(hit.views)}</p>
           <p class="asset-results-dimensions">${hit.height} x ${hit.width}</p>
-          <p class="asset-results-tags"><span>${hit.tags.join('</span> <span>')}</span></p>
+          <p class="asset-results-tags"><span>${(hit.tags || []).join('</span> <span>')}</span></p>
         </div>
       `;
       list.appendChild(item);
