@@ -94,6 +94,18 @@ export default function decorate(block) {
   }
 
   const showResults = (results, type) => {
+    const datalist = document.getElementById('query-suggestions');
+    if (results.facets && datalist) {
+      Object.entries(results.facets)
+        .filter(([facetName]) => facetName !== 'assetID')
+        .forEach(([facetName, values]) => {
+          Object.keys(values).slice(0, 5).forEach((value) => {
+            const option = document.createElement('option');
+            option.innerHTML = facetName + ':' + value;
+            datalist.append(option);
+          });
+        });
+    }
     counter.innerHTML = `<div class="asset-results-heading"><img src="/blocks/asset-results/filter.svg">Assets & Files (${results.nbHits})</div>
   <div class="asset-results-view-switcher assets-results-view-masonry"></div>`;
     list.textContent = '';
@@ -156,6 +168,7 @@ export default function decorate(block) {
     url.searchParams.set('distinct', !filters.match(/assetID:/));
     // set filters
     url.searchParams.set('filters', filters);
+    url.searchParams.set('facets', '*');
 
     fetch(url.href).then(async (res) => showResults(await res.json(), 'masonry'));
   };
