@@ -114,12 +114,14 @@ export default function decorate(block) {
       const item = document.createElement('li');
       const topurl = new URL(hit.topurl || hit.sourceURL || hit.image);
       const imageURL = new URL(hit.image);
+      const detailURL = new URL(window.location.href);
+      detailURL.searchParams.set('q', 'assetID:' + hit.assetID);
       imageURL.searchParams.set('width', 750);
       const picture = createOptimizedPicture(imageURL.href, hit.caption, false, [{ width: '750' }]);
       item.innerHTML = `
         ${picture.outerHTML}
         <div class="asset-results-details source-${hit.sourceType}">
-          <p class="asset-results-caption">${hit.caption}</p>
+          <p class="asset-results-caption"><a href="${detailURL.href}">${hit.caption}</a></p>
           <p class="asset-results-source"><a href="${topurl.href}">${hit.sourceDomain}</a></p>
           <p class="asset-results-views">${humanSize(hit.views)}</p>
           <p class="asset-results-dimensions">${hit.height} x ${hit.width}</p>
@@ -151,7 +153,7 @@ export default function decorate(block) {
     url.searchParams.set('x-algolia-application-id', 'SWFXY1CU7X');
     // only one objectID per assetID
     // (search for "a person wearing sunglasses" for test)
-    url.searchParams.set('distinct', 'true');
+    url.searchParams.set('distinct', !filters.match(/assetID:/));
     // set filters
     url.searchParams.set('filters', filters);
 
