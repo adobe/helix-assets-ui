@@ -229,3 +229,82 @@ main .asset-results-dimensions::before {
   main .asset-results-masonry-item:hover .asset-results-details {
     display: block;
   }
+
+  main .asset-results-oneup {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 0;
+    overflow: scroll;
+    z-index: 2;
+  }
+
+  main .asset-results-oneup header > div {
+    background-color: white;
+    position: fixed;
+    left: 0;
+    right: 0;
+  }
+
+  main .asset-results-oneup .asset-results-oneup-picture {
+    height: 80vh;
+    width: 100vw;
+    background-color: #ddd;
+    padding: 16px;
+    box-sizing: border-box;
+  }
+
+  main .asset-results-oneup .asset-results-oneup-picture img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  main .asset-results-oneup .asset-results-oneup-section {
+    padding: 16px;
+    border-top: 1px solid #ccc;
+  }
+
+  main .asset-results-oneup .asset-results-oneup-info h3 {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  main .asset-results-oneup .asset-results-oneup-info dl {
+    font-size: 12px;
+  }
+
+  main .asset-results-oneup .asset-results-oneup-info dt {
+    display: inline-block;
+    width: 30%;
+    max-width: 200px;
+  }
+
+  main .asset-results-oneup .asset-results-oneup-info dd {
+    margin: 0;
+    display: inline-block;
+  }
+
+  main .asset-results-oneup .asset-results-oneup-info dd span {
+    background-color: var(--highlight-background-color);
+    color: var(--background-color);
+    padding: 0.2em 1em;
+    border-radius: 2em;
+    margin-right: 0.4em;
+    margin-bottom: 0.2em;
+    display: inline-block;
+  }
+
+  @media (min-width: 900px) {
+    main .asset-results-oneup > div {
+      display: flex;
+    }
+
+    main .asset-results-oneup .asset-results-oneup-info {
+      width: 300px;
+    }
+  }
+
+

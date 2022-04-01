@@ -93,7 +93,7 @@ export default function decorate(block) {
     return `${number.toFixed()} ${units[u]}`;
   }
 
-  const showResults = (results, type) => {
+  const showResults = (results) => {
     const datalist = document.getElementById('query-suggestions');
     if (results.facets && datalist) {
       Object.entries(results.facets)
@@ -101,7 +101,7 @@ export default function decorate(block) {
         .forEach(([facetName, values]) => {
           Object.keys(values).slice(0, 5).forEach((value) => {
             const option = document.createElement('option');
-            option.innerHTML = facetName + ':' + value;
+            option.innerHTML = `${facetName}:${value}`;
             datalist.append(option);
           });
         });
@@ -127,11 +127,11 @@ export default function decorate(block) {
       const topurl = new URL(hit.topurl || hit.sourceURL || hit.image);
       const imageURL = new URL(hit.image);
       const detailURL = new URL(window.location.href);
-      detailURL.searchParams.set('q', 'assetID:' + hit.assetID);
+      detailURL.searchParams.set('q', `assetID:${hit.assetID}`);
       imageURL.searchParams.set('width', 750);
       const picture = createOptimizedPicture(imageURL.href, hit.caption, false, [{ width: '750' }]);
       item.innerHTML = `
-        ${picture.outerHTML}
+        <a href="${detailURL.href}">${picture.outerHTML}</a>
         <div class="asset-results-details source-${hit.sourceType}">
           <p class="asset-results-caption"><a href="${detailURL.href}">${hit.caption}</a></p>
           <p class="asset-results-source"><a href="${topurl.href}">${hit.sourceDomain}</a></p>
@@ -148,6 +148,84 @@ export default function decorate(block) {
     m.update();
 
     grid.append(list);
+  };
+
+  const showOneUp = (asset) => {
+    const createInfo = (panelConfig) => {
+      const panel = document.createElement('div');
+      panelConfig.forEach((sectionConfig) => {
+        const section = document.createElement('div');
+        section.className = 'asset-results-oneup-section';
+        const h3 = document.createElement('h3');
+        h3.textContent = sectionConfig.title;
+        section.append(h3);
+        sectionConfig.infos.forEach((infoConfig) => {
+          const info = document.createElement('dl');
+          info.innerHTML = `<dt>${infoConfig.title}</dt><dd>${infoConfig.value}</dd>`;
+          section.append(info);
+        });
+        panel.append(section);
+      });
+      return panel;
+    };
+    console.log(asset);
+    const modal = document.createElement('div');
+    modal.classList.add('asset-results-oneup');
+    modal.innerHTML = `<header>
+      <div class="header block" data-block-name="header" data-block-status="loaded">
+      <div class="header-brand">
+        <a href="http://localhost:3000/?q=assetID%3A12e16e067b6259f02449f35a35c5b2f7505550167&amp;index=assets"><img src="/styles/adobe.svg"></a>
+        Helix Assets
+      </div>
+      <div class="header-filename"></div>
+      <div class="header-button"><button class="secondary">Done</button></div>
+    </div>
+    </header>
+    <div>
+      <div class="asset-results-oneup-picture">
+      </div>
+      <div class="asset-results-oneup-info">
+      </div>
+    </div>`;
+    const closeButton = modal.querySelector('.header-button button');
+    closeButton.addEventListener('click', () => {
+      modal.remove();
+      window.history.back();
+    });
+    const pictureDiv = modal.querySelector('.asset-results-oneup-picture');
+    const infoConfig = [{
+      title: 'Information',
+      infos: [
+        { title: 'File', value: 'Image' },
+        { title: 'Modified', value: '1/02/2021 11:01 AM' },
+        { title: 'Size', value: '193MB' },
+        { title: 'Width', value: `${asset.width}px` },
+        { title: 'Height', value: `${asset.height}px` },
+        { title: 'Access', value: 'Public' },
+      ],
+    }, {
+      title: 'Source',
+      infos: [
+        { title: 'Image', value: asset.image },
+        { title: 'URL', value: asset.topurl },
+      ],
+    }, {
+      title: 'Other',
+      infos: [
+        { title: 'SKU', value: '000000' },
+        { title: 'Status', value: 'Approved' },
+        { title: 'Tags', value: `<span>${(asset.tags || []).join('</span> <span>')}</span>` },
+        { title: 'Categories', value: `<span>${(asset.categories || []).join('</span> <span>')}</span>` },
+        { title: 'Project', value: asset.sourceDomain },
+      ],
+    }];
+
+    const infoDiv = modal.querySelector('.asset-results-oneup-info');
+    const info = createInfo(infoConfig);
+    infoDiv.append(info);
+
+    pictureDiv.appendChild(createOptimizedPicture(asset.image));
+    block.append(modal);
   };
 
   const search = () => {
@@ -170,7 +248,14 @@ export default function decorate(block) {
     url.searchParams.set('filters', filters);
     url.searchParams.set('facets', '*');
 
-    fetch(url.href).then(async (res) => showResults(await res.json(), 'masonry'));
+    fetch(url.href).then(async (res) => {
+      const json = await res.json();
+      if (filters.includes('assetID:')) {
+        showOneUp(json.hits[0]);
+      } else {
+        showResults(json, 'masonry');
+      }
+    });
   };
 
   window.addURLStateChangeListener(search);

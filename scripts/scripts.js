@@ -521,7 +521,6 @@ document.addEventListener('click', () => sampleRUM('click'));
 
 loadPage(document);
 
-
 window.addURLStateChangeListener = (listener) => {
   window.stateChangeListeners = [...(window.stateChangeListeners || []), listener];
 };
@@ -530,7 +529,6 @@ window.changeURLState = (state, url) => {
   window.history.pushState(state, '', url);
   (window.stateChangeListeners || []).forEach((listener) => listener(state, url));
 };
-
 
 function buildHeroBlock(main) {
   const h1 = main.querySelector('h1');
@@ -551,10 +549,13 @@ function loadHeader(header) {
 }
 
 function loadFooter(footer) {
+  return (footer);
+  /*
   const footerBlock = buildBlock('footer', '');
   footer.append(footerBlock);
   decorateBlock(footerBlock);
   loadBlock(footerBlock);
+  */
 }
 
 /**
@@ -615,6 +616,6 @@ async function loadLazy(doc) {
  */
 function loadDelayed() {
   // eslint-disable-next-line import/no-cycle
-  window.setTimeout(() => import('./delayed.js'), 3000);
+  // window.setTimeout(() => import('./delayed.js'), 3000);
   // load anything that can be postponed to the latest here
 }
