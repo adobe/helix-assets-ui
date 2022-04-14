@@ -111,7 +111,7 @@ pre {
   overflow: scroll;
 }
 
-input, button {
+input[placeholder], button {
   font-size: 14px;
   width: 100%;
   max-width: 50rem;
