@@ -246,7 +246,9 @@ export default function decorate(block) {
     const filters = [
       ...(terms.filter((term) => term.match(':'))),
       ...myurl.searchParams.getAll('ff'),
-    ].join(' AND ');
+    ]
+    .map(t => t.split(':').map(s => s.match(/ /) ? `"${s}"` : s).join(':'))
+    .join(' AND ');
     const words = terms.filter((term) => !term.match(':')).join(' ');
 
     const url = new URL(`https://SWFXY1CU7X-dsn.algolia.net/1/indexes/${index}`);
