@@ -569,12 +569,28 @@ initHlx();
  */
 
 const LCP_BLOCKS = ['hero']; // add your LCP blocks to the list
-const RUM_GENERATION = 'project-1'; // add your RUM generation information here
+const RUM_GENERATION = 'helix-assets-1'; // add your RUM generation information here
 const PRODUCTION_DOMAINS = [];
 
 sampleRUM('top');
 window.addEventListener('load', () => sampleRUM('load'));
-document.addEventListener('click', () => sampleRUM('click'));
+document.addEventListener('click', (event) => {
+  sampleRUM('click', {
+    target: sampleRUM.targetselector(event.target),
+    source: sampleRUM.sourceselector(event.target),
+  });
+});
+
+const olderror = window.onerror;
+window.onerror = (event, source, line) => {
+  sampleRUM('error', { source, target: line });
+  // keep the old error handler around
+  if (typeof olderror === 'function') {
+    olderror(event, source, line);
+  } else {
+    throw new Error(event);
+  }
+};
 
 loadPage(document);
 
@@ -640,6 +656,8 @@ export function decorateMain(main) {
   buildAutoBlocks(main);
   decorateSections(main);
   decorateBlocks(main);
+  // sample blocks
+  sampleRUM.observe(main.querySelectorAll('div[data-block-name]'));
 }
 
 /**
