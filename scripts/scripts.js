@@ -21,7 +21,7 @@ export function sampleRUM(checkpoint, data = {}) {
     window.hlx = window.hlx || {};
     if (!window.hlx.rum) {
       const usp = new URLSearchParams(window.location.search);
-      const weight = (usp.get('rum') === 'on') ? 1 : 100; // with parameter, weight is 1. Defaults to 100.
+      const weight = (usp.get('rum') === 'on') ? 1 : 1; // with parameter, weight is 1. Defaults to 100.
       // eslint-disable-next-line no-bitwise
       const hashCode = (s) => s.split('').reduce((a, b) => (((a << 5) - a) + b.charCodeAt(0)) | 0, 0);
       const id = `${hashCode(window.location.href)}-${new Date().getTime()}-${Math.random().toString(16).substr(2, 14)}`;
@@ -44,7 +44,7 @@ export function sampleRUM(checkpoint, data = {}) {
       if (checkpoint === 'cwv') {
         // use classic script to avoid CORS issues
         const script = document.createElement('script');
-        script.src = 'https://rum.hlx3.page/.rum/web-vitals/dist/web-vitals.iife.js';
+        script.src = 'https://rum.hlx.page/.rum/web-vitals/dist/web-vitals.iife.js';
         script.onload = () => {
           const storeCWV = (measurement) => {
             data.cwv = {};
@@ -64,6 +64,63 @@ export function sampleRUM(checkpoint, data = {}) {
     // something went wrong
   }
 }
+
+sampleRUM.mediaobserver = (window.IntersectionObserver) ? new IntersectionObserver((entries) => {
+  entries
+    .filter((entry) => entry.isIntersecting)
+    .forEach((entry) => {
+      sampleRUM.mediaobserver.unobserve(entry.target); // observe only once
+      const target = sampleRUM.targetselector(entry.target);
+      const source = sampleRUM.sourceselector(entry.target);
+      sampleRUM('viewmedia', { target, source });
+    });
+}, { threshold: 0.25 }) : { observe: () => {} };
+
+sampleRUM.blockobserver = (window.IntersectionObserver) ? new IntersectionObserver((entries) => {
+  entries
+    .filter((entry) => entry.isIntersecting)
+    .forEach((entry) => {
+      sampleRUM.blockobserver.unobserve(entry.target); // observe only once
+      const target = sampleRUM.targetselector(entry.target);
+      const source = sampleRUM.sourceselector(entry.target);
+      sampleRUM('viewblock', { target, source });
+    });
+}, { threshold: 0.25 }) : { observe: () => {} };
+
+sampleRUM.observe = ((elements) => {
+  elements.forEach((element) => {
+    if (element.tagName.toLowerCase() === 'img'
+    || element.tagName.toLowerCase() === 'video'
+    || element.tagName.toLowerCase() === 'audio'
+    || element.tagName.toLowerCase() === 'iframe') {
+      sampleRUM.mediaobserver.observe(element);
+    } else {
+      sampleRUM.blockobserver.observe(element);
+    }
+  });
+});
+
+sampleRUM.sourceselector = (element) => {
+  if (element === document.body || element === document.documentElement || !element) {
+    return undefined;
+  }
+  if (element.id) {
+    return `#${element.id}`;
+  }
+  if (element.getAttribute('data-block-name')) {
+    return `.${element.getAttribute('data-block-name')}`;
+  }
+  return sampleRUM.sourceselector(element.parentElement);
+};
+
+sampleRUM.targetselector = (element) => {
+  let value = element.getAttribute('href') || element.currentSrc || element.getAttribute('src');
+  if (value && value.startsWith('https://')) {
+    // resolve relative links
+    value = new URL(value, window.location).href;
+  }
+  return value;
+};
 
 /**
  * Loads a CSS file.
