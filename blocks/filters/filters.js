@@ -11,6 +11,54 @@ export default function decorate(block) {
 
     const allfacets = url.searchParams.getAll('ff');
 
+    ['created', 'modified'].forEach((dateprop) => {
+      const parentdiv = document.createElement('div');
+      const facetdiv = document.createElement('div');
+      facetdiv.classList.add('filter');
+      parentdiv.innerHTML = `<h3>${dateprop}</h3>`;
+      
+      const input = document.createElement('input');
+      input.type = 'date';
+      input.id = `f:${dateprop}-minimum`;
+      const label = document.createElement('label');
+      label.setAttribute('for', input.id);
+      label.innerHTML = `${dateprop} after`;
+      
+      const input2 = document.createElement('input');
+      input2.type = 'date';
+      input2.id = `f:${dateprop}-maximum`;
+      const label2 = document.createElement('label');
+      label2.setAttribute('for', input2.id);
+      label2.innerHTML = `${dateprop} before`;
+      
+      if (url.searchParams.has(input.id)) {
+        input.valueAsNumber = url.searchParams.get(input.id).match(/[0-9]+/);
+      }
+      if (url.searchParams.has(input2.id)) {
+        input2.valueAsNumber = url.searchParams.get(input2.id).match(/[0-9]+/);
+      }
+      
+      const el = ({target}) => {
+        const myurl = new URL(window.location.href);
+        if (!!target.valueAsNumber) {
+          myurl.searchParams.set(target.id, target.valueAsNumber);
+        } else {
+          myurl.searchParams.delete(target.id);       
+        }
+        window.changeURLState({}, myurl.href);
+      };
+      
+      input.addEventListener('change', el);
+      input2.addEventListener('change', el);
+      
+      facetdiv.append(input);
+      facetdiv.append(label);
+      facetdiv.append(input2);
+      facetdiv.append(label2);
+      parentdiv.append(facetdiv);
+      block.append(parentdiv);
+    });
+
     Object.keys(facets)
       .filter((facet) => !ignoredFacets.includes(facet))
       .forEach((facet) => {
@@ -31,7 +79,6 @@ export default function decorate(block) {
           facetdiv.append(label);
 
           checkbox.addEventListener('change', () => {
-            console.log('toggled', facet, value);
             const myurl = new URL(window.location.href);
             if (checkbox.checked) {
               myurl.searchParams.append('ff', `${facet}:${value}`);
@@ -45,6 +92,9 @@ export default function decorate(block) {
             window.changeURLState({}, myurl.href);
           });
         });
+
+        
+
         block.append(parentdiv);
       });
   });
