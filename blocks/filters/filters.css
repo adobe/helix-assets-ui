@@ -1,5 +1,5 @@
 div.filters-container.show-sidebar {
-  grid-template-columns: 400px auto;
+  grid-template-columns: 220px auto;
   grid-template-areas: "sidebar results";
 }
 
