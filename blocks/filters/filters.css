@@ -1,0 +1,57 @@
+div.filters-container.show-sidebar {
+  grid-template-columns: 220px auto;
+  grid-template-areas: "sidebar results";
+}
+
+div.filters-container {
+  display: grid;
+  grid-template-areas: "none results";
+  grid-template-columns: 0px 100%;
+  align-items: start;
+}
+
+div.filters-wrapper {
+  grid-area: sidebar;
+  margin-top: 0;
+  margin-left: 1em;
+}
+
+div.filters h2 {
+  font-size: 1rem;
+}
+
+div.filters h3 {
+  font-size: 13px;
+  color: #888;
+}
+
+div.filters input[type=checkbox] {
+  grid-column: 1;
+  display: inline;
+}
+
+div.filters label {
+  display: block;
+  grid-column: 2;
+  grid-row: auto;
+  font-size: 13px;
+}
+
+div.filters label .count {
+  color: #888;
+}
+
+div.filters label .count:before {
+  content: " (";
+}
+
+div.filters label .count:after {
+  content: ")";
+}
+
+div.facet {
+  display: grid;
+  grid-template-columns: 40px auto;
+  max-height: 200px;
+  overflow: scroll;
+}

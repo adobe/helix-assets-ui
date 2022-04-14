@@ -603,6 +603,21 @@ window.changeURLState = (state, url) => {
   (window.stateChangeListeners || []).forEach((listener) => listener(state, url));
 };
 
+window.appState = {
+  state: {},
+  listeners: {},
+  set(prop, value) {
+    this.state[prop] = value;
+    (this.listeners[prop] || []).forEach((cb) => cb(prop, value));
+  },
+  on(prop, cb) {
+    this.listeners[prop] = [cb, ...(this.listeners[prop] || [])];
+  },
+  get(prop) {
+    return this.state[prop];
+  },
+};
+
 function buildHeroBlock(main) {
   const h1 = main.querySelector('h1');
   const picture = main.querySelector('picture');
@@ -612,6 +627,13 @@ function buildHeroBlock(main) {
     section.append(buildBlock('hero', { elems: [picture, h1] }));
     main.prepend(section);
   }
+}
+
+function buildFilterBlock(main) {
+  const wrapperdiv = main.firstElementChild;
+  const filterdiv = document.createElement('h2');
+  filterdiv.innerHTML = 'Filters';
+  wrapperdiv.prepend(buildBlock('filters', { elems: [filterdiv] }));
 }
 
 function loadHeader(header) {
@@ -638,6 +660,7 @@ function loadFooter(footer) {
 function buildAutoBlocks(main) {
   try {
     buildHeroBlock(main);
+    buildFilterBlock(main);
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Auto Blocking failed', error);

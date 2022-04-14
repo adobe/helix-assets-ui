@@ -108,6 +108,15 @@ export default function decorate(block) {
     }
     counter.innerHTML = `<div class="asset-results-heading"><img src="/blocks/asset-results/filter.svg">Assets & Files (${results.nbHits})</div>
   <div class="asset-results-view-switcher assets-results-view-masonry"></div>`;
+
+    const filterbutton = counter.firstElementChild;
+    filterbutton.addEventListener('click', () => {
+      block.parentElement.parentElement.classList.toggle('show-sidebar');
+      const url = new URL(window.location.href);
+      url.hash = block.parentElement.parentElement.classList.contains('show-sidebar') ? 'sidebar' : '';
+      window.history.replaceState(null, null, url.href);
+    });
+
     list.textContent = '';
     const switcher = block.querySelector('.asset-results-view-switcher');
     switcher.addEventListener('click', () => {
@@ -234,7 +243,23 @@ export default function decorate(block) {
     const index = myurl.searchParams.get('index') || 'assets';
 
     const terms = query.split(' ');
-    const filters = terms.filter((term) => term.match(':')).join(' AND ');
+    
+    console.log(Array.from(myurl.searchParams.entries())
+      .filter(([param]) => param.match(/f:(.*)-minimum/))
+    );
+    
+    const filters = [
+      ...(Array.from(myurl.searchParams.entries())
+        .filter(([param]) => param.match(/f:(.*)-minimum/))
+        .map(([param, value]) => `${param.replace(/f:(.*)-minimum/, '$1')}>${value}`)),
+      ...(Array.from(myurl.searchParams.entries())
+        .filter(([param]) => param.match(/f:(.*)-maximum/))
+        .map(([param, value]) => `${param.replace(/f:(.*)-maximum/, '$1')}<${value}`)),
+      ...(terms.filter((term) => term.match(':'))),
+      ...myurl.searchParams.getAll('ff'),
+    ]
+      .map((t) => t.split(':').map((s) => (s.match(/ /) ? `"${s}"` : s)).join(':'))
+      .join(' AND ');
     const words = terms.filter((term) => !term.match(':')).join(' ');
 
     const url = new URL(`https://SWFXY1CU7X-dsn.algolia.net/1/indexes/${index}`);
@@ -255,6 +280,7 @@ export default function decorate(block) {
       } else {
         showResults(json, 'masonry');
       }
+      window.appState.set('facets', json.facets);
     });
   };
 

@@ -2,9 +2,9 @@ export default async function decorate(block) {
   const selfURL = new URL(window.location.href);
   selfURL.searchParams.set('index', selfURL.searchParams.get('index') === 'assets' ? 'assets-cai' : 'assets');
   block.innerHTML = `<div class="header-brand"><a href="${selfURL.href}"><img src="/styles/adobe.svg"></a>Helix Assets</div><div class="header-input"><span><input placeholder="Landscape Type to search..."></span></div><div class="header-button"><button class="secondary">Done</button></div>`;
-  
+
   const textfield = block.querySelector('input');
-  
+
   if (new URL(window.location.href).searchParams.has('q')) {
     textfield.value = new URL(window.location.href).searchParams.get('q');
   }
@@ -15,7 +15,7 @@ export default async function decorate(block) {
   // enable autocompletion
   textfield.setAttribute('list', datalist.id);
   textfield.setAttribute('placeholder', 'type or drag to search');
-  
+
   textfield.addEventListener('drop', async (e) => {
     // image similarity search
     e.preventDefault();
