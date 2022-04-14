@@ -13,6 +13,7 @@ div.filters-container {
 div.filters-wrapper {
   grid-area: sidebar;
   margin-top: 0;
+  margin-left: 1em;
 }
 
 div.filters h2 {
