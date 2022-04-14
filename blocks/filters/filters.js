@@ -11,6 +11,54 @@ export default function decorate(block) {
 
     const allfacets = url.searchParams.getAll('ff');
 
+    ['width', 'height'].forEach((numprop) => {
+      const parentdiv = document.createElement('div');
+      const facetdiv = document.createElement('div');
+      facetdiv.classList.add('filter');
+      parentdiv.innerHTML = `<h3>${numprop}</h3>`;
+      
+      const input = document.createElement('input');
+      input.type = 'number';
+      input.id = `f:${numprop}-minimum`;
+      const label = document.createElement('label');
+      label.setAttribute('for', input.id);
+      label.innerHTML = `minimum ${numprop}`;
+      
+      const input2 = document.createElement('input');
+      input2.type = 'number';
+      input2.id = `f:${numprop}-maximum`;
+      const label2 = document.createElement('label');
+      label2.setAttribute('for', input2.id);
+      label2.innerHTML = `maximum ${numprop}`;
+      
+      if (url.searchParams.has(input.id)) {
+        input.valueAsNumber = url.searchParams.get(input.id).match(/[0-9]+/);
+      }
+      if (url.searchParams.has(input2.id)) {
+        input2.valueAsNumber = url.searchParams.get(input2.id).match(/[0-9]+/);
+      }
+      
+      const el = ({target}) => {
+        const myurl = new URL(window.location.href);
+        if (!!target.valueAsNumber) {
+          myurl.searchParams.set(target.id, target.valueAsNumber);
+        } else {
+          myurl.searchParams.delete(target.id);       
+        }
+        window.changeURLState({}, myurl.href);
+      };
+      
+      input.addEventListener('change', el);
+      input2.addEventListener('change', el);
+      
+      facetdiv.append(input);
+      facetdiv.append(label);
+      facetdiv.append(input2);
+      facetdiv.append(label2);
+      parentdiv.append(facetdiv);
+      block.append(parentdiv);
+    });
+
     ['created', 'modified'].forEach((dateprop) => {
       const parentdiv = document.createElement('div');
       const facetdiv = document.createElement('div');
