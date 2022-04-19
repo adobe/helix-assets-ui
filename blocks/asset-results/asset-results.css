@@ -302,6 +302,14 @@ main .asset-results-dimensions::before {
     display: inline-block;
     text-overflow: ellipsis;
   }
+  
+  main .asset-results-oneup dd.alt {
+    color: #888;
+  }
+  
+  main .asset-results-oneup dd.alt:before {
+    content: "\00a0or: ";
+  }
 
   main .asset-results-oneup .asset-results-oneup-info dd span {
     background-color: var(--highlight-background-color);
@@ -316,7 +324,7 @@ main .asset-results-dimensions::before {
   @media (min-width: 900px) {
     main .asset-results-oneup > div {
       display: grid;
-      grid-template-columns: auto 220px;
+      grid-template-columns: auto 320px;
       grid-template-rows: calc(100vh - 190px) 220px auto;
     }
     

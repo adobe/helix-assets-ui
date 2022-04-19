@@ -169,9 +169,21 @@ export default function decorate(block) {
         const h3 = document.createElement('h3');
         h3.textContent = sectionConfig.title;
         section.append(h3);
-        sectionConfig.infos.forEach((infoConfig) => {
+        sectionConfig.infos
+          .filter((infoConfig) => infoConfig.value)
+          .forEach((infoConfig) => {
           const info = document.createElement('dl');
           info.innerHTML = `<dt>${infoConfig.title}</dt><dd>${infoConfig.value}</dd>`;
+          if (infoConfig.alts && infoConfig.alts.length) {
+            Array.from(new Set(infoConfig.alts))
+              .filter(alt => alt !== infoConfig.value)
+              .forEach(alt => {
+                const ddalt = document.createElement('dd');
+                ddalt.className = 'alt';
+                ddalt.innerHTML = alt;
+                info.append(ddalt);
+              });
+          }
           section.append(info);
         });
         panel.append(section);
@@ -205,14 +217,16 @@ export default function decorate(block) {
     });
     const pictureDiv = modal.querySelector('.asset-results-oneup-picture');
     const moreDiv = modal.querySelector('.asset-results-oneup-more');
+    console.log(asset);
     const infoConfig = [{
       title: 'Information',
       infos: [
-        { title: 'File', value: 'Image' },
-        { title: 'Modified', value: '1/02/2021 11:01 AM' },
+        { title: 'File', value: asset.type.toUpperCase(), alts: otherassets.map(o => o.type.toUpperCase()) },
+        { title: 'Created', value: asset.created && new Date(asset.created).toLocaleDateString() },
+        { title: 'Modified', value: asset.modified && new Date(asset.modified).toLocaleDateString() },
         { title: 'Size', value: '193MB' },
-        { title: 'Width', value: `${asset.width}px` },
-        { title: 'Height', value: `${asset.height}px` },
+        { title: 'Width', value: `${asset.width}px`, alts: otherassets.map(o => `${o.width}px`) },
+        { title: 'Height', value: `${asset.height}px`, alts: otherassets.map(o => `${o.height}px`) },
         { title: 'Access', value: 'Public' },
       ],
     }, {
@@ -224,6 +238,8 @@ export default function decorate(block) {
     }, {
       title: 'Other',
       infos: [
+        { title: 'Human Description', value: asset.alt, alts: otherassets.map(o => o.alt) },
+        { title: 'Machine Description', value: asset.caption, alts: otherassets.map(o => o.caption) },
         { title: 'SKU', value: '000000' },
         { title: 'Status', value: 'Approved' },
         { title: 'Tags', value: `<span>${(asset.tags || []).join('</span> <span>')}</span>` },
