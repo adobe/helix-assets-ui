@@ -159,7 +159,8 @@ export default function decorate(block) {
     grid.append(list);
   };
 
-  const showOneUp = (asset) => {
+  const showOneUp = (asset, otherassets) => {
+    console.log(otherassets);
     const createInfo = (panelConfig) => {
       const panel = document.createElement('div');
       panelConfig.forEach((sectionConfig) => {
@@ -168,16 +169,27 @@ export default function decorate(block) {
         const h3 = document.createElement('h3');
         h3.textContent = sectionConfig.title;
         section.append(h3);
-        sectionConfig.infos.forEach((infoConfig) => {
+        sectionConfig.infos
+          .filter((infoConfig) => infoConfig.value)
+          .forEach((infoConfig) => {
           const info = document.createElement('dl');
           info.innerHTML = `<dt>${infoConfig.title}</dt><dd>${infoConfig.value}</dd>`;
+          if (infoConfig.alts && infoConfig.alts.length) {
+            Array.from(new Set(infoConfig.alts))
+              .filter(alt => alt !== infoConfig.value)
+              .forEach(alt => {
+                const ddalt = document.createElement('dd');
+                ddalt.className = 'alt';
+                ddalt.innerHTML = alt;
+                info.append(ddalt);
+              });
+          }
           section.append(info);
         });
         panel.append(section);
       });
       return panel;
     };
-    console.log(asset);
     const modal = document.createElement('div');
     modal.classList.add('asset-results-oneup');
     modal.innerHTML = `<header>
@@ -195,6 +207,8 @@ export default function decorate(block) {
       </div>
       <div class="asset-results-oneup-info">
       </div>
+      <div class="asset-results-oneup-more">
+      </div>
     </div>`;
     const closeButton = modal.querySelector('.header-button button');
     closeButton.addEventListener('click', () => {
@@ -202,14 +216,17 @@ export default function decorate(block) {
       window.history.back();
     });
     const pictureDiv = modal.querySelector('.asset-results-oneup-picture');
+    const moreDiv = modal.querySelector('.asset-results-oneup-more');
+    console.log(asset);
     const infoConfig = [{
       title: 'Information',
       infos: [
-        { title: 'File', value: 'Image' },
-        { title: 'Modified', value: '1/02/2021 11:01 AM' },
+        { title: 'File', value: asset.type.toUpperCase(), alts: otherassets.map(o => o.type.toUpperCase()) },
+        { title: 'Created', value: asset.created && new Date(asset.created).toLocaleDateString() },
+        { title: 'Modified', value: asset.modified && new Date(asset.modified).toLocaleDateString() },
         { title: 'Size', value: '193MB' },
-        { title: 'Width', value: `${asset.width}px` },
-        { title: 'Height', value: `${asset.height}px` },
+        { title: 'Width', value: `${asset.width}px`, alts: otherassets.map(o => `${o.width}px`) },
+        { title: 'Height', value: `${asset.height}px`, alts: otherassets.map(o => `${o.height}px`) },
         { title: 'Access', value: 'Public' },
       ],
     }, {
@@ -221,6 +238,8 @@ export default function decorate(block) {
     }, {
       title: 'Other',
       infos: [
+        { title: 'Human Description', value: asset.alt, alts: otherassets.map(o => o.alt) },
+        { title: 'Machine Description', value: asset.caption, alts: otherassets.map(o => o.caption) },
         { title: 'SKU', value: '000000' },
         { title: 'Status', value: 'Approved' },
         { title: 'Tags', value: `<span>${(asset.tags || []).join('</span> <span>')}</span>` },
@@ -232,6 +251,20 @@ export default function decorate(block) {
     const infoDiv = modal.querySelector('.asset-results-oneup-info');
     const info = createInfo(infoConfig);
     infoDiv.append(info);
+    
+    otherassets.forEach(otherasset => {
+      const a = document.createElement('a');
+      a.href = `#${otherasset.objectID}`;
+      a.appendChild(createOptimizedPicture(otherasset.image));
+      moreDiv.appendChild(a);
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        const myasset = otherasset;
+        const allotherassets = [asset, ...otherassets].filter(a => a !== myasset);
+        modal.remove();
+        showOneUp(myasset, allotherassets);
+      });
+    });
 
     pictureDiv.appendChild(createOptimizedPicture(asset.image));
     block.append(modal);
@@ -276,7 +309,7 @@ export default function decorate(block) {
     fetch(url.href).then(async (res) => {
       const json = await res.json();
       if (filters.includes('assetID:')) {
-        showOneUp(json.hits[0]);
+        showOneUp(json.hits[0], json.hits.slice(1));
       } else {
         showResults(json, 'masonry');
       }
