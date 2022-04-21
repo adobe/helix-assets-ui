@@ -221,9 +221,9 @@ export default function decorate(block) {
     const infoConfig = [{
       title: 'Information',
       infos: [
-        { title: 'File', value: asset.type.toUpperCase(), alts: otherassets.map(o => o.type.toUpperCase()) },
-        { title: 'Created', value: asset.created && new Date(asset.created).toLocaleDateString() },
-        { title: 'Modified', value: asset.modified && new Date(asset.modified).toLocaleDateString() },
+        { title: 'File', value: asset?.type.toUpperCase(), alts: otherassets.map(o => o.type?.toUpperCase()) },
+        { title: 'Created', value: asset?.created && new Date(asset.created).toLocaleDateString() },
+        { title: 'Modified', value: asset?.modified && new Date(asset.modified).toLocaleDateString() },
         { title: 'Size', value: '193MB' },
         { title: 'Width', value: `${asset.width}px`, alts: otherassets.map(o => `${o.width}px`) },
         { title: 'Height', value: `${asset.height}px`, alts: otherassets.map(o => `${o.height}px`) },
@@ -263,6 +263,20 @@ export default function decorate(block) {
         const allotherassets = [asset, ...otherassets].filter(a => a !== myasset);
         modal.remove();
         showOneUp(myasset, allotherassets);
+      });
+    });
+    
+    const similarserviceurl = new URL('https://helix-pages.anywhere.run/helix-services/asset-ingestor@ci315');
+    similarserviceurl.searchParams.set('url', asset.image);
+    const similarassets = fetch(similarserviceurl.href).then(async res => {
+      const { hits } = await res.json();
+      hits.forEach(otherasset => {
+        const a = document.createElement('a');
+        const detailurl = new URL(window.location.href);
+        detailurl.searchParams.set('q', `assetID:${otherasset.assetID}`);
+        a.href = detailurl.href;
+        a.appendChild(createOptimizedPicture(otherasset.image));
+        moreDiv.appendChild(a);
       });
     });
 
