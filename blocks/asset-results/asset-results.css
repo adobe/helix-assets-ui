@@ -325,7 +325,7 @@ main .asset-results-dimensions::before {
     main .asset-results-oneup > div {
       display: grid;
       grid-template-columns: auto 320px;
-      grid-template-rows: calc(100vh - 190px) 220px auto;
+      grid-template-rows: calc(100vh - 250px) 220px;
     }
     
     main .asset-results-oneup > div > .asset-results-oneup-picture {
