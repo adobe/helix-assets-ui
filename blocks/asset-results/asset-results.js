@@ -266,7 +266,7 @@ export default function decorate(block) {
       });
     });
     
-    const similarserviceurl = new URL('https://helix-pages.anywhere.run/helix-services/asset-ingestor@ci315');
+    const similarserviceurl = new URL('https://helix-pages.anywhere.run/helix-services/asset-ingestor@v1');
     similarserviceurl.searchParams.set('url', asset.image);
     const similarassets = fetch(similarserviceurl.href).then(async res => {
       const { hits } = await res.json();
