@@ -2,16 +2,6 @@ import { createOptimizedPicture } from '../../scripts/scripts.js';
 
 export default function decorate(block) {
   window.results = block;
-  
-  const displayNameMap = {
-    rum: "Website",
-    stock: "Stock",
-    brandportal: "Brand Portal",
-    aem: "AEM",
-    type: "File type",
-    sourceType: "Sources",
-    aspectratio: "Orientation"
-  }
 
   const counter = document.createElement('div');
   counter.className = 'asset-results-controls';
@@ -232,6 +222,12 @@ export default function decorate(block) {
     const assetDescription = asset.alt != undefined ? asset.alt : asset.caption;
     const createdDate = asset.created != undefined ?  new Date(asset.created).toLocaleDateString() : 'N/A';
     const modDate = asset.modified != undefined ?  new Date(asset.modified).toLocaleDateString() : 'N/A';
+    const displayNameMap = {
+      rum: "Website",
+      stock: "Stock",
+      brandportal: "Brand Portal",
+      aem: "AEM"
+    };
     const infoConfig = [{
       title: 'Information',
       infos: [
