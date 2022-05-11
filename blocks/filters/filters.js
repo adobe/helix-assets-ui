@@ -131,7 +131,7 @@ export default function decorate(block) {
           checkbox.id = `facet-${facet}-${value}`;
           checkbox.checked = !!allfacets.filter((f) => f === `${facet}:${value}`).length;
           const label = document.createElement('label');
-          label.innerHTML = `<span class="value">${displayNameMap[value]}</span><span class="count">${count}</span>`;
+          label.innerHTML = `<span class="value">${displayNameMap[value] != undefined ? displayNameMap[value] : value}</span><span class="count">${count}</span>`;
           label.setAttribute('for', checkbox.id);
           facetdiv.append(checkbox);
           facetdiv.append(label);
