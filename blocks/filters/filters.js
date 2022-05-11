@@ -31,7 +31,7 @@ export default function decorate(block) {
         parentdiv.innerHTML = `<h3>${facetTitle}</h3>`;
         parentdiv.append(facetdiv);
         Object.entries(facets[facet]).forEach(([value, count]) => {
-          if (!ignoreSource.includes(value) [ 
+          if (!ignoreSource.includes(value)) {
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
             checkbox.id = `facet-${facet}-${value}`;
