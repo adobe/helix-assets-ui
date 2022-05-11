@@ -25,13 +25,13 @@ export default function decorate(block) {
       .filter((facet) => !ignoredFacets.includes(facet))
       .forEach((facet) => {
         const parentdiv = document.createElement('div');
-      console.log(facet);
         const facetdiv = document.createElement('div');
         facetdiv.classList.add('facet');
         const facetTitle = displayNameMap[facet];
         parentdiv.innerHTML = `<h3>${facetTitle}</h3>`;
         parentdiv.append(facetdiv);
         Object.entries(facets[facet]).forEach(([value, count]) => {
+          console.log(value);
           const checkbox = document.createElement('input');
           checkbox.type = 'checkbox';
           checkbox.id = `facet-${facet}-${value}`;
