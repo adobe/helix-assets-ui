@@ -98,7 +98,7 @@ export default function decorate(block) {
       };
       
       input.addEventListener('change', el);
-      input2.addEventListener('change', el);
+      //input2.addEventListener('change', el);
       
       facetdiv.append(input);
       facetdiv.append(label);
