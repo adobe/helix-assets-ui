@@ -20,6 +20,46 @@ export default function decorate(block) {
 
     const allfacets = url.searchParams.getAll('ff');
 
+    Object.keys(facets)
+      .filter((facet) => !ignoredFacets.includes(facet))
+      .forEach((facet) => {
+        const parentdiv = document.createElement('div');
+        const facetdiv = document.createElement('div');
+        facetdiv.classList.add('facet');
+        const facetTitle = displayNameMap[facet];
+        parentdiv.innerHTML = `<h3>${facetTitle}</h3>`;
+        parentdiv.append(facetdiv);
+        Object.entries(facets[facet]).forEach(([value, count]) => {
+          const checkbox = document.createElement('input');
+          checkbox.type = 'checkbox';
+          checkbox.id = `facet-${facet}-${value}`;
+          checkbox.checked = !!allfacets.filter((f) => f === `${facet}:${value}`).length;
+          const label = document.createElement('label');
+          label.innerHTML = `<span class="value">${displayNameMap[value] != undefined ? displayNameMap[value] : value}</span><span class="count">${count}</span>`;
+          label.setAttribute('for', checkbox.id);
+          facetdiv.append(checkbox);
+          facetdiv.append(label);
+
+          checkbox.addEventListener('change', () => {
+            const myurl = new URL(window.location.href);
+            if (checkbox.checked) {
+              myurl.searchParams.append('ff', `${facet}:${value}`);
+            } else {
+              const validfacets = myurl.searchParams.getAll('ff')
+                .filter((v) => v !== `${facet}:${value}`);
+              myurl.searchParams.delete('ff');
+              validfacets.forEach((v) => myurl.searchParams.append('ff', v));
+            }
+
+            window.changeURLState({}, myurl.href);
+          });
+        });
+
+        
+
+        block.append(parentdiv);
+      });
+
     ['width', 'height'].forEach((numprop) => {
       const parentdiv = document.createElement('div');
       const facetdiv = document.createElement('div');
@@ -116,44 +156,6 @@ export default function decorate(block) {
       block.append(parentdiv);
     });
 
-    Object.keys(facets)
-      .filter((facet) => !ignoredFacets.includes(facet))
-      .forEach((facet) => {
-        const parentdiv = document.createElement('div');
-        const facetdiv = document.createElement('div');
-        facetdiv.classList.add('facet');
-        const facetTitle = displayNameMap[facet];
-        parentdiv.innerHTML = `<h3>${facetTitle}</h3>`;
-        parentdiv.append(facetdiv);
-        Object.entries(facets[facet]).forEach(([value, count]) => {
-          const checkbox = document.createElement('input');
-          checkbox.type = 'checkbox';
-          checkbox.id = `facet-${facet}-${value}`;
-          checkbox.checked = !!allfacets.filter((f) => f === `${facet}:${value}`).length;
-          const label = document.createElement('label');
-          label.innerHTML = `<span class="value">${displayNameMap[value] != undefined ? displayNameMap[value] : value}</span><span class="count">${count}</span>`;
-          label.setAttribute('for', checkbox.id);
-          facetdiv.append(checkbox);
-          facetdiv.append(label);
-
-          checkbox.addEventListener('change', () => {
-            const myurl = new URL(window.location.href);
-            if (checkbox.checked) {
-              myurl.searchParams.append('ff', `${facet}:${value}`);
-            } else {
-              const validfacets = myurl.searchParams.getAll('ff')
-                .filter((v) => v !== `${facet}:${value}`);
-              myurl.searchParams.delete('ff');
-              validfacets.forEach((v) => myurl.searchParams.append('ff', v));
-            }
-
-            window.changeURLState({}, myurl.href);
-          });
-        });
-
-        
-
-        block.append(parentdiv);
-      });
+    
   });
 }
