@@ -1,4 +1,13 @@
 const ignoredFacets = ['assetID', 'tags', 'multiple', 'background', 'categories', 'foreground', 'sourceDomain'];
+const displayNameMap = new Map();
+displayNameMap.set("rum", "Website");
+displayNameMap.set("stock", "Stock");
+displayNameMap.set("brandportal", "Brand Portal");
+displayNameMap.set("aem", "AEM");
+displayNameMap.set("type", "File type");
+displayNameMap.set("sourceType", "Sources");
+displayNameMap.set("aspectratio", "Brand Portal");
+displayNameMap.set("aspectratio", "Orientation");
 
 export default function decorate(block) {
   window.appState.on('facets', (_, facets) => {
@@ -113,7 +122,8 @@ export default function decorate(block) {
         const parentdiv = document.createElement('div');
         const facetdiv = document.createElement('div');
         facetdiv.classList.add('facet');
-        parentdiv.innerHTML = `<h3>${facet}</h3>`;
+        const facetTitle = displayNameMap.get(facet):
+        parentdiv.innerHTML = `<h3>${facetTitle}</h3>`;
         parentdiv.append(facetdiv);
         Object.entries(facets[facet]).forEach(([value, count]) => {
           const checkbox = document.createElement('input');
