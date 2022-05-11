@@ -6,7 +6,6 @@ displayNameMap.set("brandportal", "Brand Portal");
 displayNameMap.set("aem", "AEM");
 displayNameMap.set("type", "File type");
 displayNameMap.set("sourceType", "Sources");
-displayNameMap.set("aspectratio", "Brand Portal");
 displayNameMap.set("aspectratio", "Orientation");
 
 export default function decorate(block) {
@@ -124,6 +123,7 @@ export default function decorate(block) {
         facetdiv.classList.add('facet');
         //const facetTitle = displayNameMap.get(facet):
         console.log('facet:' + facet);
+      console.log(displayNameMap);
         parentdiv.innerHTML = `<h3>${facet}</h3>`;
         parentdiv.append(facetdiv);
         Object.entries(facets[facet]).forEach(([value, count]) => {
