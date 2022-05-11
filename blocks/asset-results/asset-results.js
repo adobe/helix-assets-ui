@@ -225,8 +225,8 @@ export default function decorate(block) {
       infos: [
         { title: 'File type', value: asset?.type.toUpperCase(), alts: otherassets.map(o => o.type?.toUpperCase()) },
         { title: 'Description', value: assetDescription, alts: otherassets.map(o => (asset.alt != undefined ? o.alt : o.caption)) },
-        { title: 'Created', value: asset?.created && new Date(asset.created).toLocaleDateString() },
-        { title: 'Modified', value: asset?.modified && new Date(asset.modified).toLocaleDateString() },
+        { title: 'Created', value: (asset?.created && new Date(asset.created).toLocaleDateString() : 'N/A') },
+        { title: 'Modified', value: (asset?.modified && new Date(asset.modified).toLocaleDateString() : 'N/A') },
         { title: 'Size', value: '193MB' },
         { title: 'Width', value: `${asset.width}px`, alts: otherassets.map(o => `${o.width}px`) },
         { title: 'Height', value: `${asset.height}px`, alts: otherassets.map(o => `${o.height}px`) },
