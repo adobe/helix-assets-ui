@@ -218,10 +218,15 @@ export default function decorate(block) {
     const pictureDiv = modal.querySelector('.asset-results-oneup-picture');
     const moreDiv = modal.querySelector('.asset-results-oneup-more');
     console.log('Asset:', asset);
+    const assetDescription = asset.alt != undefined ? asset.alt : asset.caption;
+    const assetAlts = asset.alt != undefined ? o.alt : o.caption;
     const infoConfig = [{
       title: 'Information',
       infos: [
         { title: 'File type', value: asset?.type.toUpperCase(), alts: otherassets.map(o => o.type?.toUpperCase()) },
+        { title: 'Description', value: assetDescription, alts: otherassets.map(o => assetAlts) },
+        //{ title: 'Description', value: asset.alt, alts: otherassets.map(o => o.alt) },
+        //{ title: 'Machine Description', value: asset.caption, alts: otherassets.map(o => o.caption) },
         { title: 'Created', value: asset?.created && new Date(asset.created).toLocaleDateString() },
         { title: 'Modified', value: asset?.modified && new Date(asset.modified).toLocaleDateString() },
         { title: 'Size', value: '193MB' },
@@ -229,10 +234,8 @@ export default function decorate(block) {
         { title: 'Height', value: `${asset.height}px`, alts: otherassets.map(o => `${o.height}px`) },
         { title: 'Source', value: asset.sourceDomain },
         { title: 'File name', value: 'Filename' },
-        { title: 'Path', value: '<a href="' + asset.sourceURL +'" /a>' },
+        { title: 'Path', value: '<a href="' + asset.sourceURL +'">' + asset.sourceURL + '"</a>' },
         { title: 'Tags', value: `<span>${(asset.tags || []).join('</span> <span>')}</span>` },
-        { title: 'Human Description', value: asset.alt, alts: otherassets.map(o => o.alt) },
-        { title: 'Machine Description', value: asset.caption, alts: otherassets.map(o => o.caption) }
       ],
     }];
 
