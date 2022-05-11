@@ -219,12 +219,11 @@ export default function decorate(block) {
     const moreDiv = modal.querySelector('.asset-results-oneup-more');
     console.log('Asset:', asset);
     const assetDescription = asset.alt != undefined ? asset.alt : asset.caption;
-    const assetAlts = asset.alt != undefined ? o.alt : o.caption;
     const infoConfig = [{
       title: 'Information',
       infos: [
         { title: 'File type', value: asset?.type.toUpperCase(), alts: otherassets.map(o => o.type?.toUpperCase()) },
-        { title: 'Description', value: assetDescription, alts: otherassets.map(o => assetAlts) },
+        { title: 'Description', value: assetDescription, alts: otherassets.map(o => asset.alt != undefined ? o.alt : o.caption;) },
         //{ title: 'Description', value: asset.alt, alts: otherassets.map(o => o.alt) },
         //{ title: 'Machine Description', value: asset.caption, alts: otherassets.map(o => o.caption) },
         { title: 'Created', value: asset?.created && new Date(asset.created).toLocaleDateString() },
