@@ -123,7 +123,7 @@ export default function decorate(block) {
         const facetdiv = document.createElement('div');
         facetdiv.classList.add('facet');
         //const facetTitle = displayNameMap.get(facet):
-        //console.log(facetTitle);
+        console.log('facet:' + facet);
         parentdiv.innerHTML = `<h3>${facet}</h3>`;
         parentdiv.append(facetdiv);
         Object.entries(facets[facet]).forEach(([value, count]) => {
