@@ -123,10 +123,7 @@ export default function decorate(block) {
         const facetdiv = document.createElement('div');
         facetdiv.classList.add('facet');
         const facetTitle = displayNameMap[facet];
-        console.log(facet);
-      console.log(displayNameMap);
-      console.log('title:' + facetTitle);
-        parentdiv.innerHTML = `<h3>${facet}</h3>`;
+        parentdiv.innerHTML = `<h3>${facetTitle}</h3>`;
         parentdiv.append(facetdiv);
         Object.entries(facets[facet]).forEach(([value, count]) => {
           const checkbox = document.createElement('input');
