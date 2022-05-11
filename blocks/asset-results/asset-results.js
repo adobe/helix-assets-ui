@@ -227,10 +227,9 @@ export default function decorate(block) {
         { title: 'Size', value: '193MB' },
         { title: 'Width', value: `${asset.width}px`, alts: otherassets.map(o => `${o.width}px`) },
         { title: 'Height', value: `${asset.height}px`, alts: otherassets.map(o => `${o.height}px`) },
-        { title: 'Access', value: 'Public' },
       ],
     }, {
-      title: 'Source',
+      //title: 'Source',
       infos: [
         { title: 'Image', value: asset.image },
         { title: 'URL', value: asset.topurl },
