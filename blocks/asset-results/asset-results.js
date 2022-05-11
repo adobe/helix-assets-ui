@@ -224,8 +224,6 @@ export default function decorate(block) {
       infos: [
         { title: 'File type', value: asset?.type.toUpperCase(), alts: otherassets.map(o => o.type?.toUpperCase()) },
         { title: 'Description', value: assetDescription, alts: otherassets.map(o => (asset.alt != undefined ? o.alt : o.caption)) },
-        //{ title: 'Description', value: asset.alt, alts: otherassets.map(o => o.alt) },
-        //{ title: 'Machine Description', value: asset.caption, alts: otherassets.map(o => o.caption) },
         { title: 'Created', value: asset?.created && new Date(asset.created).toLocaleDateString() },
         { title: 'Modified', value: asset?.modified && new Date(asset.modified).toLocaleDateString() },
         { title: 'Size', value: '193MB' },
@@ -233,7 +231,7 @@ export default function decorate(block) {
         { title: 'Height', value: `${asset.height}px`, alts: otherassets.map(o => `${o.height}px`) },
         { title: 'Source', value: asset.sourceDomain },
         { title: 'File name', value: 'Filename' },
-        { title: 'Path', value: '<a href="' + asset.sourceURL +'">' + asset.sourceURL + '"</a>' },
+        { title: 'Path', value: '<a href="' + asset.sourceURL +'">' + asset.sourceURL + '</a>' },
         { title: 'Tags', value: `<span>${(asset.tags || []).join('</span> <span>')}</span>` },
       ],
     }];
