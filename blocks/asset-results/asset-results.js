@@ -220,13 +220,15 @@ export default function decorate(block) {
     const moreDiv = modal.querySelector('.asset-results-oneup-more');
     console.log('Asset:', asset);
     const assetDescription = asset.alt != undefined ? asset.alt : asset.caption;
+    const createdDate = asset.created != undefined ?  new Date(asset.created).toLocaleDateString() : 'N/A';
+    const modDate = asset.modified != undefined ?  new Date(asset.modified).toLocaleDateString() : 'N/A';
     const infoConfig = [{
       title: 'Information',
       infos: [
         { title: 'File type', value: asset?.type.toUpperCase(), alts: otherassets.map(o => o.type?.toUpperCase()) },
         { title: 'Description', value: assetDescription, alts: otherassets.map(o => (asset.alt != undefined ? o.alt : o.caption)) },
-        { title: 'Created', value: (asset?.created && new Date(asset.created).toLocaleDateString() : 'N/A') },
-        { title: 'Modified', value: (asset?.modified && new Date(asset.modified).toLocaleDateString() : 'N/A') },
+        { title: 'Created', value: createdDate },
+        { title: 'Modified', value: modDate},
         { title: 'Size', value: '193MB' },
         { title: 'Width', value: `${asset.width}px`, alts: otherassets.map(o => `${o.width}px`) },
         { title: 'Height', value: `${asset.height}px`, alts: otherassets.map(o => `${o.height}px`) },
