@@ -1,4 +1,4 @@
-const ignoredFacets = ['assetID'];
+const ignoredFacets = ['assetID', 'tags', 'multiple', 'background', 'categories', 'foreground', 'sourceDomain'];
 
 export default function decorate(block) {
   window.appState.on('facets', (_, facets) => {
