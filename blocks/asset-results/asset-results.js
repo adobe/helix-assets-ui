@@ -11,11 +11,11 @@ export default function decorate(block) {
   block.appendChild(list);
 
   const masonry = document.createElement('div');
-  masonry.className = 'asset-results-masonry';
+  masonry.className = 'asset-results-masonry hidden';
   block.appendChild(masonry);
 
   const grid = document.createElement('div');
-  grid.className = 'asset-results-grid hidden';
+  grid.className = 'asset-results-grid';
   block.append(grid);
 
   class Masonry {
@@ -107,7 +107,7 @@ export default function decorate(block) {
         });
     }
     counter.innerHTML = `<div class="asset-results-heading"><img src="/blocks/asset-results/filter.svg">Assets & Files (${results.nbHits})</div>
-  <div class="asset-results-view-switcher assets-results-view-masonry"></div>`;
+  <div class="asset-results-view-switcher assets-results-view-grid"></div>`;
 
     const filterbutton = counter.firstElementChild;
     filterbutton.addEventListener('click', () => {
