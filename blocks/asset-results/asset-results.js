@@ -138,11 +138,12 @@ export default function decorate(block) {
       const detailURL = new URL(window.location.href);
       detailURL.searchParams.set('q', `assetID:${hit.assetID}`);
       imageURL.searchParams.set('width', 750);
-      const picture = createOptimizedPicture(imageURL.href, hit.caption, false, [{ width: '750' }]);
+      const description = hit.alt != undefined ? hit.alt : hit.caption;
+      const picture = createOptimizedPicture(imageURL.href, description, false, [{ width: '750' }]);
       item.innerHTML = `
         <a href="${detailURL.href}">${picture.outerHTML}</a>
         <div class="asset-results-details source-${hit.sourceType}">
-          <p class="asset-results-caption"><a href="${detailURL.href}">${hit.caption}</a></p>
+          <p class="asset-results-caption"><a href="${detailURL.href}">${description}</a></p>
           <p class="asset-results-source"><a href="${topurl.href}">${hit.sourceDomain}</a></p>
           <p class="asset-results-views">${humanSize(hit.views)}</p>
           <p class="asset-results-dimensions">${hit.height} x ${hit.width}</p>
