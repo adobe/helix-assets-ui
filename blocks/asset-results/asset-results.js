@@ -223,7 +223,7 @@ export default function decorate(block) {
       title: 'Information',
       infos: [
         { title: 'File type', value: asset?.type.toUpperCase(), alts: otherassets.map(o => o.type?.toUpperCase()) },
-        { title: 'Description', value: assetDescription, alts: otherassets.map(o => asset.alt != undefined ? o.alt : o.caption;) },
+        { title: 'Description', value: assetDescription, alts: otherassets.map(o => (asset.alt != undefined ? o.alt : o.caption)) },
         //{ title: 'Description', value: asset.alt, alts: otherassets.map(o => o.alt) },
         //{ title: 'Machine Description', value: asset.caption, alts: otherassets.map(o => o.caption) },
         { title: 'Created', value: asset?.created && new Date(asset.created).toLocaleDateString() },
