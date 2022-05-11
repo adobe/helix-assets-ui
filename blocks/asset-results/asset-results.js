@@ -106,7 +106,7 @@ export default function decorate(block) {
           });
         });
     }
-    counter.innerHTML = `<div class="asset-results-heading"><img src="/blocks/asset-results/filter.svg">Assets & Files (${results.nbHits})</div>
+    counter.innerHTML = `<div class="asset-results-heading"><img src="/blocks/asset-results/filter.svg">Assets & files (${results.nbHits})</div>
   <div class="asset-results-view-switcher assets-results-view-grid"></div>`;
 
     const filterbutton = counter.firstElementChild;
@@ -217,7 +217,7 @@ export default function decorate(block) {
     });
     const pictureDiv = modal.querySelector('.asset-results-oneup-picture');
     const moreDiv = modal.querySelector('.asset-results-oneup-more');
-    console.log(asset);
+    console.log('Asset:', asset);
     const infoConfig = [{
       title: 'Information',
       infos: [
