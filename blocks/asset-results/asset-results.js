@@ -231,7 +231,7 @@ export default function decorate(block) {
         { title: 'Height', value: `${asset.height}px`, alts: otherassets.map(o => `${o.height}px`) },
         { title: 'Source', value: asset.sourceDomain },
         { title: 'File name', value: 'Filename' },
-        { title: 'Path', value: '<a href="' + asset.sourceURL != undefined ? asset.sourceURL : asset.image +'">' + asset.sourceURL != undefined ? asset.sourceURL : asset.image + '</a>' },
+        { title: 'Path', value: '<a href="' + (asset.sourceURL != undefined ? asset.sourceURL : asset.image) +'">' + (asset.sourceURL != undefined ? asset.sourceURL : asset.image) + '</a>' },
         { title: 'Tags', value: `<span>${(asset.tags || []).join('</span> <span>')}</span>` },
       ],
     }];
