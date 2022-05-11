@@ -2,6 +2,16 @@ import { createOptimizedPicture } from '../../scripts/scripts.js';
 
 export default function decorate(block) {
   window.results = block;
+  
+  const displayNameMap = {
+    rum: "Website",
+    stock: "Stock",
+    brandportal: "Brand Portal",
+    aem: "AEM",
+    type: "File type",
+    sourceType: "Sources",
+    aspectratio: "Orientation"
+  }
 
   const counter = document.createElement('div');
   counter.className = 'asset-results-controls';
@@ -232,7 +242,7 @@ export default function decorate(block) {
         { title: 'Size', value: '193MB' },
         { title: 'Width', value: `${asset.width}px`, alts: otherassets.map(o => `${o.width}px`) },
         { title: 'Height', value: `${asset.height}px`, alts: otherassets.map(o => `${o.height}px`) },
-        { title: 'Source', value: asset.sourceDomain },
+        { title: 'Source', value: displayNameMap[asset.sourceDomain] },
         { title: 'File name', value: 'Filename' },
         { title: 'Path', value: '<a href="' + (asset.sourceURL != undefined ? asset.sourceURL : asset.image) +'">' + (asset.sourceURL != undefined ? asset.sourceURL : asset.image) + '</a>' },
         { title: 'Tags', value: `<span>${(asset.tags || []).join('</span> <span>')}</span>` },
