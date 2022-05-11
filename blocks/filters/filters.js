@@ -60,11 +60,14 @@ export default function decorate(block) {
         block.append(parentdiv);
       });
 
+    const resolutionDiv = document.createElement('div');
+    resolutionDiv.innerHTML = `<h3>Resolution</h3>`;
+    
     ['width', 'height'].forEach((numprop) => {
       const parentdiv = document.createElement('div');
       const facetdiv = document.createElement('div');
       facetdiv.classList.add('filter');
-      parentdiv.innerHTML = `<h3>${numprop}</h3>`;
+      //parentdiv.innerHTML = `<h3>${numprop}</h3>`;
       
       const input = document.createElement('input');
       input.type = 'number';
@@ -105,7 +108,8 @@ export default function decorate(block) {
       //facetdiv.append(input2);
       //facetdiv.append(label2);
       parentdiv.append(facetdiv);
-      block.append(parentdiv);
+      resolutionDiv.append(parentdiv);
+      block.append(resolutionDiv);
     });
 
     ['created', 'modified'].forEach((dateprop) => {
