@@ -117,7 +117,7 @@ export default function decorate(block) {
       const facetdiv = document.createElement('div');
       facetdiv.classList.add('filter');
       const fLabel = dateprop.charAt(0).toUpperCase() + dateprop.slice(1);
-      parentdiv.innerHTML = `<h3>${dateprop}</h3>`;
+      parentdiv.innerHTML = `<h3>${fLabel}</h3>`;
       
       const input = document.createElement('input');
       input.type = 'date';
