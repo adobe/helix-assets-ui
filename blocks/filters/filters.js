@@ -73,19 +73,19 @@ export default function decorate(block) {
       label.setAttribute('for', input.id);
       label.innerHTML = `minimum ${numprop}`;
       
-      const input2 = document.createElement('input');
-      input2.type = 'number';
-      input2.id = `f:${numprop}-maximum`;
-      const label2 = document.createElement('label');
-      label2.setAttribute('for', input2.id);
-      label2.innerHTML = `maximum ${numprop}`;
+      //const input2 = document.createElement('input');
+      //input2.type = 'number';
+      //input2.id = `f:${numprop}-maximum`;
+      //const label2 = document.createElement('label');
+      //label2.setAttribute('for', input2.id);
+      //label2.innerHTML = `maximum ${numprop}`;
       
       if (url.searchParams.has(input.id)) {
         input.valueAsNumber = url.searchParams.get(input.id).match(/[0-9]+/);
       }
-      if (url.searchParams.has(input2.id)) {
-        input2.valueAsNumber = url.searchParams.get(input2.id).match(/[0-9]+/);
-      }
+      //if (url.searchParams.has(input2.id)) {
+      //  input2.valueAsNumber = url.searchParams.get(input2.id).match(/[0-9]+/);
+      //}
       
       const el = ({target}) => {
         const myurl = new URL(window.location.href);
@@ -102,8 +102,8 @@ export default function decorate(block) {
       
       facetdiv.append(input);
       facetdiv.append(label);
-      facetdiv.append(input2);
-      facetdiv.append(label2);
+      //facetdiv.append(input2);
+      //facetdiv.append(label2);
       parentdiv.append(facetdiv);
       block.append(parentdiv);
     });
