@@ -221,29 +221,18 @@ export default function decorate(block) {
     const infoConfig = [{
       title: 'Information',
       infos: [
-        { title: 'File', value: asset?.type.toUpperCase(), alts: otherassets.map(o => o.type?.toUpperCase()) },
+        { title: 'File type', value: asset?.type.toUpperCase(), alts: otherassets.map(o => o.type?.toUpperCase()) },
         { title: 'Created', value: asset?.created && new Date(asset.created).toLocaleDateString() },
         { title: 'Modified', value: asset?.modified && new Date(asset.modified).toLocaleDateString() },
         { title: 'Size', value: '193MB' },
         { title: 'Width', value: `${asset.width}px`, alts: otherassets.map(o => `${o.width}px`) },
         { title: 'Height', value: `${asset.height}px`, alts: otherassets.map(o => `${o.height}px`) },
-      ],
-    }, {
-      //title: 'Source',
-      infos: [
-        { title: 'Image', value: asset.image },
-        { title: 'URL', value: asset.topurl },
-      ],
-    }, {
-      title: 'Other',
-      infos: [
-        { title: 'Human Description', value: asset.alt, alts: otherassets.map(o => o.alt) },
-        { title: 'Machine Description', value: asset.caption, alts: otherassets.map(o => o.caption) },
-        { title: 'SKU', value: '000000' },
-        { title: 'Status', value: 'Approved' },
+        { title: 'Source', value: asset.sourceDomain },
+        { title: 'File name', value: 'Filename' },
+        { title: 'Path', value: '<a href="' + asset.sourceURL +'" /a>' },
         { title: 'Tags', value: `<span>${(asset.tags || []).join('</span> <span>')}</span>` },
-        { title: 'Categories', value: `<span>${(asset.categories || []).join('</span> <span>')}</span>` },
-        { title: 'Project', value: asset.sourceDomain },
+        { title: 'Human Description', value: asset.alt, alts: otherassets.map(o => o.alt) },
+        { title: 'Machine Description', value: asset.caption, alts: otherassets.map(o => o.caption) }
       ],
     }];
 
