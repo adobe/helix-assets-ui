@@ -1,4 +1,5 @@
 const ignoredFacets = ['assetID', 'tags', 'multiple', 'background', 'categories', 'foreground', 'sourceDomain'];
+const ignoreSource = [''];
 const displayNameMap = {
   rum: "Website",
   stock: "Stock",
@@ -24,6 +25,7 @@ export default function decorate(block) {
       .filter((facet) => !ignoredFacets.includes(facet))
       .forEach((facet) => {
         const parentdiv = document.createElement('div');
+      console.log(facet);
         const facetdiv = document.createElement('div');
         facetdiv.classList.add('facet');
         const facetTitle = displayNameMap[facet];
