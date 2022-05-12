@@ -237,13 +237,11 @@ export default function decorate(block) {
     });
     const pictureDiv = modal.querySelector('.asset-results-oneup-picture');
     const moreDiv = modal.querySelector('.asset-results-oneup-more');
-    
-    var assetDescription, createdDate, modDate
-    if (asset != undefined) {
-      assetDescription = asset.alt != undefined ? asset.alt : asset.caption;
-      createdDate = asset.created != undefined ?  new Date(asset.created).toLocaleDateString() : 'N/A';
-      modDate = asset.modified != undefined ?  new Date(asset.modified).toLocaleDateString() : 'N/A';
-    }
+
+    const assetDescription = asset.alt != undefined ? asset.alt : asset.caption;
+    const createdDate = asset.created != undefined ?  new Date(asset.created).toLocaleDateString() : 'N/A';
+    const modDate = asset.modified != undefined ?  new Date(asset.modified).toLocaleDateString() : 'N/A';
+
     const displayNameMap = {
       rum: "Website",
       stock: "Stock",
