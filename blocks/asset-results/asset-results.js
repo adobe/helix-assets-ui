@@ -107,7 +107,7 @@ export default function decorate(block) {
         });
     }
     counter.innerHTML = `<div class="asset-results-heading"><img src="/blocks/asset-results/filter.svg">Assets & files (${results.nbHits})</div>
-  <div class="asset-results-view-switcher assets-results-view-grid"></div>`;
+  <div class="asset-results-view-switcher assets-results-view-masonry"></div>`;
 
     const filterbutton = counter.firstElementChild;
     filterbutton.addEventListener('click', () => {
