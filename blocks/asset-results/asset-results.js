@@ -157,7 +157,7 @@ export default function decorate(block) {
       imageURL.searchParams.set('width', 750);
       const description = hit.alt != undefined ? hit.alt : hit.caption;
       const picture = createOptimizedPicture(imageURL.href, description, false, [{ width: '750' }]);
-      const path = getDisplayPath(detailURL.href,hit.sourceType);
+      const path = getDisplayPath(topurl.href,hit.sourceType);
       console.log('Path:' + path);
       item.innerHTML = `
         <a href="${detailURL.href}">${picture.outerHTML}</a>
