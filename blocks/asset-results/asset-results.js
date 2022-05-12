@@ -245,6 +245,7 @@ export default function decorate(block) {
       brandportal: "Brand Portal",
       aem: "AEM"
     };
+    console.log(asset);
     const infoConfig = [{
       title: 'Information',
       infos: [
