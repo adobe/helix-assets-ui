@@ -92,6 +92,12 @@ export default function decorate(block) {
     } while (Math.round(Math.abs(number) * r) / r >= thresh && u < units.length - 1);
     return `${number.toFixed()} ${units[u]}`;
   }
+  
+  function getDisplayPath(url, source) {
+    var url = new URL(url);
+    var path = source == 'stock' ? (href.substring(0, href.indexOf('?')) + '?prev_url=detail') : url.pathname.substring(0, url.pathname.lastIndexOf('/'));
+    return path;
+  }
 
   const showResults = (results) => {
     const datalist = document.getElementById('query-suggestions');
@@ -240,7 +246,7 @@ export default function decorate(block) {
         { title: 'Height', value: `${asset.height}px`, alts: otherassets.map(o => `${o.height}px`) },
         { title: 'Source', value: displayNameMap[asset.sourceType] },
         { title: 'File name', value: 'Filename' },
-        { title: 'Path', value: '<a href="' + (asset.sourceURL != undefined ? asset.sourceURL : asset.image) +'">' + (asset.sourceURL != undefined ? asset.sourceURL : asset.image) + '</a>' },
+        { title: 'Path', value: '<a href="' + (asset.sourceURL != undefined ? asset.sourceURL : asset.image) +'">' + getDisplayPath((asset.sourceURL != undefined ? asset.sourceURL : asset.image), asset.sourceType) + '</a>' },
         { title: 'Tags', value: `<span>${(asset.tags || []).join('</span> <span>')}</span>` },
       ],
     }];
