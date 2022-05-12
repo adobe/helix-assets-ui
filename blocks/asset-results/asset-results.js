@@ -239,7 +239,7 @@ export default function decorate(block) {
     const moreDiv = modal.querySelector('.asset-results-oneup-more');
     
     var assetDescription, createdDate, modDate
-    if (asset) {
+    if (asset != undefined) {
       assetDescription = asset.alt != undefined ? asset.alt : asset.caption;
       createdDate = asset.created != undefined ?  new Date(asset.created).toLocaleDateString() : 'N/A';
       modDate = asset.modified != undefined ?  new Date(asset.modified).toLocaleDateString() : 'N/A';
