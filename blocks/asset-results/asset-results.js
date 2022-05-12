@@ -93,8 +93,8 @@ export default function decorate(block) {
     return `${number.toFixed()} ${units[u]}`;
   }
   
-  function getDisplayPath(url, source) {
-    var url = new URL(url);
+  function getDisplayPath(href, source) {
+    var url = new URL(href);
     var path = source == 'stock' ? (href.substring(0, href.indexOf('?')) + '?prev_url=detail') : url.pathname.substring(0, url.pathname.lastIndexOf('/'));
     return path;
   }
