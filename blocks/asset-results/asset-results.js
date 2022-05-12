@@ -101,7 +101,7 @@ export default function decorate(block) {
     if (source == 'stock') {
       path = (href.substring(0, href.indexOf('?')) + '?prev_url=detail');
     } else if (source == 'aem') {
-      path = url.pathname.substring(aem..length, url.pathname.lastIndexOf('/'));
+      path = url.pathname.substring(aem.length, url.pathname.lastIndexOf('/'));
     } else if (source == 'brandportal') {
       path = url.pathname.substring(brandportal.length, url.pathname.lastIndexOf('/'));
     } else {
