@@ -94,8 +94,19 @@ export default function decorate(block) {
   }
   
   function getDisplayPath(href, source) {
+    const brandportal = '/assetdetails.html/content/dam/mac/marketinghub/';
+    const aem = '/assetdetails.html/content/dam'  
     var url = new URL(href);
-    var path = source == 'stock' ? (href.substring(0, href.indexOf('?')) + '?prev_url=detail') : url.pathname.substring(0, url.pathname.lastIndexOf('/'));
+    var path = '';
+    if (source == 'stock') {
+      path = (href.substring(0, href.indexOf('?')) + '?prev_url=detail');
+    } else if (source == 'aem') {
+      path = url.pathname.substring(aem.lenght(), url.pathname.lastIndexOf('/'));
+    } else if (source == 'brandportal') {
+      path = url.pathname.substring(brandportal.lenght(), url.pathname.lastIndexOf('/'));
+    } else {
+      path = url.pathname.substring(0, url.pathname.lastIndexOf('/'));
+    }
     return path;
   }
 
