@@ -74,7 +74,7 @@ main .asset-results .asset-results-grid .asset-results-details {
 }
 
 main .asset-results .asset-results-grid .asset-results-details::after {
-  content: 'Approved for use';
+  /* content: 'Approved for use'; */
   color: #555;
   display: block;
   padding-left: 20px;
