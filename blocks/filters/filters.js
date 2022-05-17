@@ -1,14 +1,14 @@
 const ignoredFacets = ['assetID', 'tags', 'multiple', 'background', 'categories', 'foreground', 'sourceDomain'];
 const ignoreSource = ['website'];
 const displayNameMap = {
-  rum: "Website",
-  stock: "Stock",
-  brandportal: "Brand Portal",
-  aem: "AEM",
-  type: "File type",
-  sourceType: "Sources",
-  aspectratio: "Orientation"
-}
+  rum: 'Website',
+  stock: 'Stock',
+  brandportal: 'Brand Portal',
+  aem: 'AEM',
+  type: 'File type',
+  sourceType: 'Sources',
+  aspectratio: 'Orientation',
+};
 
 export default function decorate(block) {
   window.appState.on('facets', (_, facets) => {
@@ -58,58 +58,56 @@ export default function decorate(block) {
           }
         });
 
-        
-
         block.append(parentdiv);
       });
 
     const resolutionDiv = document.createElement('div');
-    resolutionDiv.innerHTML = `<h3>Resolution</h3>`;
-    
+    resolutionDiv.innerHTML = '<h3>Resolution</h3>';
+
     ['width', 'height'].forEach((numprop) => {
       const parentdiv = document.createElement('div');
       const facetdiv = document.createElement('div');
       facetdiv.classList.add('filter');
-      //parentdiv.innerHTML = `<h3>${numprop}</h3>`;
-      
+      // parentdiv.innerHTML = `<h3>${numprop}</h3>`;
+
       const input = document.createElement('input');
       input.type = 'number';
       input.id = `f:${numprop}-minimum`;
       const label = document.createElement('label');
       label.setAttribute('for', input.id);
       label.innerHTML = `minimum ${numprop}`;
-      
-      //const input2 = document.createElement('input');
-      //input2.type = 'number';
-      //input2.id = `f:${numprop}-maximum`;
-      //const label2 = document.createElement('label');
-      //label2.setAttribute('for', input2.id);
-      //label2.innerHTML = `maximum ${numprop}`;
-      
+
+      // const input2 = document.createElement('input');
+      // input2.type = 'number';
+      // input2.id = `f:${numprop}-maximum`;
+      // const label2 = document.createElement('label');
+      // label2.setAttribute('for', input2.id);
+      // label2.innerHTML = `maximum ${numprop}`;
+
       if (url.searchParams.has(input.id)) {
         input.valueAsNumber = url.searchParams.get(input.id).match(/[0-9]+/);
       }
-      //if (url.searchParams.has(input2.id)) {
+      // if (url.searchParams.has(input2.id)) {
       //  input2.valueAsNumber = url.searchParams.get(input2.id).match(/[0-9]+/);
-      //}
-      
-      const el = ({target}) => {
+      // }
+
+      const el = ({ target }) => {
         const myurl = new URL(window.location.href);
-        if (!!target.valueAsNumber) {
+        if (target.valueAsNumber) {
           myurl.searchParams.set(target.id, target.valueAsNumber);
         } else {
-          myurl.searchParams.delete(target.id);       
+          myurl.searchParams.delete(target.id);
         }
         window.changeURLState({}, myurl.href);
       };
-      
+
       input.addEventListener('change', el);
-      //input2.addEventListener('change', el);
-      
+      // input2.addEventListener('change', el);
+
       facetdiv.append(input);
       facetdiv.append(label);
-      //facetdiv.append(input2);
-      //facetdiv.append(label2);
+      // facetdiv.append(input2);
+      // facetdiv.append(label2);
       parentdiv.append(facetdiv);
       resolutionDiv.append(parentdiv);
       block.append(resolutionDiv);
@@ -121,41 +119,41 @@ export default function decorate(block) {
       facetdiv.classList.add('filter');
       const fLabel = dateprop.charAt(0).toUpperCase() + dateprop.slice(1);
       parentdiv.innerHTML = `<h3>${fLabel}</h3>`;
-      
+
       const input = document.createElement('input');
       input.type = 'date';
       input.id = `f:${dateprop}-minimum`;
       const label = document.createElement('label');
       label.setAttribute('for', input.id);
       label.innerHTML = `${dateprop} after`;
-      
+
       const input2 = document.createElement('input');
       input2.type = 'date';
       input2.id = `f:${dateprop}-maximum`;
       const label2 = document.createElement('label');
       label2.setAttribute('for', input2.id);
       label2.innerHTML = `${dateprop} before`;
-      
+
       if (url.searchParams.has(input.id)) {
         input.valueAsNumber = url.searchParams.get(input.id).match(/[0-9]+/);
       }
       if (url.searchParams.has(input2.id)) {
         input2.valueAsNumber = url.searchParams.get(input2.id).match(/[0-9]+/);
       }
-      
-      const el = ({target}) => {
+
+      const el = ({ target }) => {
         const myurl = new URL(window.location.href);
-        if (!!target.valueAsNumber) {
+        if (target.valueAsNumber) {
           myurl.searchParams.set(target.id, target.valueAsNumber);
         } else {
-          myurl.searchParams.delete(target.id);       
+          myurl.searchParams.delete(target.id);
         }
         window.changeURLState({}, myurl.href);
       };
-      
+
       input.addEventListener('change', el);
       input2.addEventListener('change', el);
-      
+
       facetdiv.append(input);
       facetdiv.append(label);
       facetdiv.append(input2);
@@ -163,7 +161,5 @@ export default function decorate(block) {
       parentdiv.append(facetdiv);
       block.append(parentdiv);
     });
-
-    
   });
 }

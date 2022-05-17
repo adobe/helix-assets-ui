@@ -92,14 +92,14 @@ export default function decorate(block) {
     } while (Math.round(Math.abs(number) * r) / r >= thresh && u < units.length - 1);
     return `${number.toFixed()} ${units[u]}`;
   }
-  
+
   function getDisplayPath(href, source) {
     const brandportal = '/assetdetails.html/content/dam/mac/marketinghub/';
-    const aem = '/assetdetails.html/content/dam'  
-    var url = new URL(href);
-    var path = '';
+    const aem = '/assetdetails.html/content/dam';
+    const url = new URL(href);
+    let path = '';
     if (source == 'stock') {
-      path = (href.substring(0, href.indexOf('?')) + '?prev_url=detail');
+      path = (`${href.substring(0, href.indexOf('?'))}?prev_url=detail`);
     } else if (source == 'aem') {
       path = url.pathname.substring(aem.length, url.pathname.lastIndexOf('/'));
     } else if (source == 'brandportal') {
@@ -157,7 +157,7 @@ export default function decorate(block) {
       imageURL.searchParams.set('width', 750);
       const description = hit.alt != undefined ? hit.alt : hit.caption;
       const picture = createOptimizedPicture(imageURL.href, description, false, [{ width: '750' }]);
-      const path = getDisplayPath(topurl.href,hit.sourceType);
+      const path = getDisplayPath(topurl.href, hit.sourceType);
 
       item.innerHTML = `
         <a href="${detailURL.href}">${picture.outerHTML}</a>
@@ -192,20 +192,20 @@ export default function decorate(block) {
         sectionConfig.infos
           .filter((infoConfig) => infoConfig.value)
           .forEach((infoConfig) => {
-          const info = document.createElement('dl');
-          info.innerHTML = `<dt>${infoConfig.title}</dt><dd>${infoConfig.value}</dd>`;
-          if (infoConfig.alts && infoConfig.alts.length) {
-            Array.from(new Set(infoConfig.alts))
-              .filter(alt => alt !== infoConfig.value)
-              .forEach(alt => {
-                const ddalt = document.createElement('dd');
-                ddalt.className = 'alt';
-                ddalt.innerHTML = alt;
-                info.append(ddalt);
-              });
-          }
-          section.append(info);
-        });
+            const info = document.createElement('dl');
+            info.innerHTML = `<dt>${infoConfig.title}</dt><dd>${infoConfig.value}</dd>`;
+            if (infoConfig.alts && infoConfig.alts.length) {
+              Array.from(new Set(infoConfig.alts))
+                .filter((alt) => alt !== infoConfig.value)
+                .forEach((alt) => {
+                  const ddalt = document.createElement('dd');
+                  ddalt.className = 'alt';
+                  ddalt.innerHTML = alt;
+                  info.append(ddalt);
+                });
+            }
+            section.append(info);
+          });
         panel.append(section);
       });
       return panel;
@@ -239,29 +239,29 @@ export default function decorate(block) {
     const moreDiv = modal.querySelector('.asset-results-oneup-more');
 
     const assetDescription = asset.alt != undefined ? asset.alt : asset.caption;
-    const createdDate = asset.created != undefined ?  new Date(asset.created).toLocaleDateString() : 'N/A';
-    const modDate = asset.modified != undefined ?  new Date(asset.modified).toLocaleDateString() : 'N/A';
+    const createdDate = asset.created != undefined ? new Date(asset.created).toLocaleDateString() : 'N/A';
+    const modDate = asset.modified != undefined ? new Date(asset.modified).toLocaleDateString() : 'N/A';
 
     const displayNameMap = {
-      rum: "Website",
-      stock: "Stock",
-      brandportal: "Brand Portal",
-      aem: "AEM"
+      rum: 'Website',
+      stock: 'Stock',
+      brandportal: 'Brand Portal',
+      aem: 'AEM',
     };
 
     const infoConfig = [{
       title: 'Information',
       infos: [
-        { title: 'File type', value: asset?.type.toUpperCase(), alts: otherassets.map(o => o.type?.toUpperCase()) },
-        { title: 'Description', value: assetDescription, alts: otherassets.map(o => (asset.alt != undefined ? o.alt : o.caption)) },
+        { title: 'File type', value: asset?.type.toUpperCase(), alts: otherassets.map((o) => o.type?.toUpperCase()) },
+        { title: 'Description', value: assetDescription, alts: otherassets.map((o) => (asset.alt != undefined ? o.alt : o.caption)) },
         { title: 'Created', value: createdDate },
-        { title: 'Modified', value: modDate},
+        { title: 'Modified', value: modDate },
         { title: 'Size', value: '193MB' },
-        { title: 'Width', value: `${asset.width}px`, alts: otherassets.map(o => `${o.width}px`) },
-        { title: 'Height', value: `${asset.height}px`, alts: otherassets.map(o => `${o.height}px`) },
+        { title: 'Width', value: `${asset.width}px`, alts: otherassets.map((o) => `${o.width}px`) },
+        { title: 'Height', value: `${asset.height}px`, alts: otherassets.map((o) => `${o.height}px`) },
         { title: 'Source', value: displayNameMap[asset.sourceType] },
         { title: 'File name', value: 'Filename' },
-        { title: 'Path', value: '<a href="' + (asset.sourceURL != undefined ? asset.sourceURL : asset.image) +'">' + getDisplayPath((asset.sourceURL != undefined ? asset.sourceURL : asset.image), asset.sourceType) + '</a>' },
+        { title: 'Path', value: `<a href="${asset.sourceURL != undefined ? asset.sourceURL : asset.image}">${getDisplayPath((asset.sourceURL != undefined ? asset.sourceURL : asset.image), asset.sourceType)}</a>` },
         { title: 'Tags', value: `<span>${(asset.tags || []).join('</span> <span>')}</span>` },
       ],
     }];
@@ -269,8 +269,8 @@ export default function decorate(block) {
     const infoDiv = modal.querySelector('.asset-results-oneup-info');
     const info = createInfo(infoConfig);
     infoDiv.append(info);
-    
-    otherassets.forEach(otherasset => {
+
+    otherassets.forEach((otherasset) => {
       const a = document.createElement('a');
       a.href = `#${otherasset.objectID}`;
       a.appendChild(createOptimizedPicture(otherasset.image));
@@ -278,17 +278,17 @@ export default function decorate(block) {
       a.addEventListener('click', (e) => {
         e.preventDefault();
         const myasset = otherasset;
-        const allotherassets = [asset, ...otherassets].filter(a => a !== myasset);
+        const allotherassets = [asset, ...otherassets].filter((a) => a !== myasset);
         modal.remove();
         showOneUp(myasset, allotherassets);
       });
     });
-    
+
     const similarserviceurl = new URL('https://helix-pages.anywhere.run/helix-services/asset-ingestor@v1');
     similarserviceurl.searchParams.set('url', asset.image);
-    const similarassets = fetch(similarserviceurl.href).then(async res => {
+    const similarassets = fetch(similarserviceurl.href).then(async (res) => {
       const { hits } = await res.json();
-      hits.forEach(otherasset => {
+      hits.forEach((otherasset) => {
         const a = document.createElement('a');
         const detailurl = new URL(window.location.href);
         detailurl.searchParams.set('q', `assetID:${otherasset.assetID}`);
@@ -308,11 +308,10 @@ export default function decorate(block) {
     const index = myurl.searchParams.get('index') || 'assets';
 
     const terms = query.split(' ');
-    
+
     console.log(Array.from(myurl.searchParams.entries())
-      .filter(([param]) => param.match(/f:(.*)-minimum/))
-    );
-    
+      .filter(([param]) => param.match(/f:(.*)-minimum/)));
+
     const filters = [
       ...(Array.from(myurl.searchParams.entries())
         .filter(([param]) => param.match(/f:(.*)-minimum/))
