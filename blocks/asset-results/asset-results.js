@@ -98,11 +98,11 @@ export default function decorate(block) {
     const aem = '/assetdetails.html/content/dam';
     const url = new URL(href);
     let path = '';
-    if (source == 'stock') {
+    if (source === 'stock') {
       path = (`${href.substring(0, href.indexOf('?'))}?prev_url=detail`);
-    } else if (source == 'aem') {
+    } else if (source === 'aem') {
       path = url.pathname.substring(aem.length, url.pathname.lastIndexOf('/'));
-    } else if (source == 'brandportal') {
+    } else if (source === 'brandportal') {
       path = url.pathname.substring(brandportal.length, url.pathname.lastIndexOf('/'));
     } else {
       path = url.pathname.substring(0, url.pathname.lastIndexOf('/'));
@@ -155,7 +155,7 @@ export default function decorate(block) {
       const detailURL = new URL(window.location.href);
       detailURL.searchParams.set('q', `assetID:${hit.assetID}`);
       imageURL.searchParams.set('width', 750);
-      const description = hit.alt != undefined ? hit.alt : hit.caption;
+      const description = hit.alt || hit.caption;
       const picture = createOptimizedPicture(imageURL.href, description, false, [{ width: '750' }]);
       const path = getDisplayPath(topurl.href, hit.sourceType);
 
@@ -179,8 +179,7 @@ export default function decorate(block) {
     grid.append(list);
   };
 
-  const showOneUp = (asset, otherassets) => {
-    console.log(otherassets);
+  const showOneUp = async (asset, otherassets) => {
     const createInfo = (panelConfig) => {
       const panel = document.createElement('div');
       panelConfig.forEach((sectionConfig) => {
@@ -238,9 +237,9 @@ export default function decorate(block) {
     const pictureDiv = modal.querySelector('.asset-results-oneup-picture');
     const moreDiv = modal.querySelector('.asset-results-oneup-more');
 
-    const assetDescription = asset.alt != undefined ? asset.alt : asset.caption;
-    const createdDate = asset.created != undefined ? new Date(asset.created).toLocaleDateString() : 'N/A';
-    const modDate = asset.modified != undefined ? new Date(asset.modified).toLocaleDateString() : 'N/A';
+    const assetDescription = asset.alt || asset.caption;
+    const createdDate = asset.created ? new Date(asset.created).toLocaleDateString() : 'N/A';
+    const modDate = asset.modified ? new Date(asset.modified).toLocaleDateString() : 'N/A';
 
     const displayNameMap = {
       rum: 'Website',
@@ -253,7 +252,7 @@ export default function decorate(block) {
       title: 'Information',
       infos: [
         { title: 'File type', value: asset?.type.toUpperCase(), alts: otherassets.map((o) => o.type?.toUpperCase()) },
-        { title: 'Description', value: assetDescription, alts: otherassets.map((o) => (asset.alt != undefined ? o.alt : o.caption)) },
+        { title: 'Description', value: assetDescription, alts: otherassets.map((o) => (o.alt || o.caption)) },
         { title: 'Created', value: createdDate },
         { title: 'Modified', value: modDate },
         { title: 'Size', value: '193MB' },
@@ -261,7 +260,7 @@ export default function decorate(block) {
         { title: 'Height', value: `${asset.height}px`, alts: otherassets.map((o) => `${o.height}px`) },
         { title: 'Source', value: displayNameMap[asset.sourceType] },
         { title: 'File name', value: 'Filename' },
-        { title: 'Path', value: `<a href="${asset.sourceURL != undefined ? asset.sourceURL : asset.image}">${getDisplayPath((asset.sourceURL != undefined ? asset.sourceURL : asset.image), asset.sourceType)}</a>` },
+        { title: 'Path', value: `<a href="${asset.sourceURL || asset.image}">${getDisplayPath((asset.sourceURL || asset.image), asset.sourceType)}</a>` },
         { title: 'Tags', value: `<span>${(asset.tags || []).join('</span> <span>')}</span>` },
       ],
     }];
@@ -278,7 +277,7 @@ export default function decorate(block) {
       a.addEventListener('click', (e) => {
         e.preventDefault();
         const myasset = otherasset;
-        const allotherassets = [asset, ...otherassets].filter((a) => a !== myasset);
+        const allotherassets = [asset, ...otherassets].filter((other) => other !== myasset);
         modal.remove();
         showOneUp(myasset, allotherassets);
       });
@@ -286,16 +285,15 @@ export default function decorate(block) {
 
     const similarserviceurl = new URL('https://helix-pages.anywhere.run/helix-services/asset-ingestor@v1');
     similarserviceurl.searchParams.set('url', asset.image);
-    const similarassets = fetch(similarserviceurl.href).then(async (res) => {
-      const { hits } = await res.json();
-      hits.forEach((otherasset) => {
-        const a = document.createElement('a');
-        const detailurl = new URL(window.location.href);
-        detailurl.searchParams.set('q', `assetID:${otherasset.assetID}`);
-        a.href = detailurl.href;
-        a.appendChild(createOptimizedPicture(otherasset.image));
-        moreDiv.appendChild(a);
-      });
+    const res = await fetch(similarserviceurl.href);
+    const { hits } = await res.json();
+    hits.forEach((otherasset) => {
+      const a = document.createElement('a');
+      const detailurl = new URL(window.location.href);
+      detailurl.searchParams.set('q', `assetID:${otherasset.assetID}`);
+      a.href = detailurl.href;
+      a.appendChild(createOptimizedPicture(otherasset.image));
+      moreDiv.appendChild(a);
     });
 
     pictureDiv.appendChild(createOptimizedPicture(asset.image));
@@ -308,9 +306,6 @@ export default function decorate(block) {
     const index = myurl.searchParams.get('index') || 'assets';
 
     const terms = query.split(' ');
-
-    console.log(Array.from(myurl.searchParams.entries())
-      .filter(([param]) => param.match(/f:(.*)-minimum/)));
 
     const filters = [
       ...(Array.from(myurl.searchParams.entries())
