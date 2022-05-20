@@ -58,9 +58,10 @@ export default function decorate(block) {
 
               window.changeURLState({}, myurl.href);
             });
-          } else if (ignoreSource.includes(value)){
+          } else if (ignoreSource.includes(value) && facet == 'sourceType'){
             websiteCount += count; 
           }
+          
           
             // list website selections
             const checkbox = document.createElement('input');
