@@ -65,7 +65,7 @@ export default function decorate(block) {
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
             checkbox.id = `facet-sourceType-website`;
-            checkbox.checked = !!allfacets.filter((f) => f === `sourceType:website`).length;
+            checkbox.checked = !!allfacets.filter((f) => f === `sourceType:rum`).length;
             const label = document.createElement('label');
             label.innerHTML = `<span class="value">Website</span><span class="count">${websiteCount}</span>`;
             label.setAttribute('for', checkbox.id);
@@ -76,7 +76,7 @@ export default function decorate(block) {
               const myurl = new URL(window.location.href);
               if (checkbox.checked) {
                 myurl.searchParams.append('ff', `sourceType:rum`);
-                myurl.searchParams.append('ff', `sourceType:website`);
+                //myurl.searchParams.append('ff', `sourceType:website`);
               } else {
                 const validfacets = myurl.searchParams.getAll('ff')
                   .filter((v) => v !== `${facet}:${value}`);
