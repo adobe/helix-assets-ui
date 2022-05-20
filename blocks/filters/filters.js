@@ -62,7 +62,6 @@ export default function decorate(block) {
             websiteCount += count; 
           }
           
-          {
             // list website selections
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
