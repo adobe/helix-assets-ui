@@ -21,7 +21,7 @@ export default function decorate(block) {
 
     const allfacets = url.searchParams.getAll('ff');
 
-    let isWebsite = true;
+    let websiteCount = 0;
 
     Object.keys(facets)
       .filter((facet) => !ignoredFacets.includes(facet))
@@ -58,14 +58,16 @@ export default function decorate(block) {
 
               window.changeURLState({}, myurl.href);
             });
-          } else if (isWebsite) {
-            // list website selections
+          } else {
+            websiteCount += count;
+        });
+        // list website selections
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
             checkbox.id = `facet-sourceType-website`;
             checkbox.checked = !!allfacets.filter((f) => f === `sourceType:website`).length;
             const label = document.createElement('label');
-            label.innerHTML = `<span class="value">Website</span><span class="count">xxx</span>`;
+            label.innerHTML = `<span class="value">Website</span><span class="count">${websiteCount}</span>`;
             label.setAttribute('for', checkbox.id);
             facetdiv.append(checkbox);
             facetdiv.append(label);
@@ -80,9 +82,8 @@ export default function decorate(block) {
                 myurl.searchParams.delete('ff');
                 validfacets.forEach((v) => myurl.searchParams.append('ff', v));
               }
-
               window.changeURLState({}, myurl.href);
-            });*/
+            });
 
             Object.entries(facets['sourceDomain']).forEach(([value, count]) => {
               if (true) {
@@ -112,9 +113,7 @@ export default function decorate(block) {
               }
             });
             isWebsite = false;
-          }
-        });
-
+          }*/
         block.append(parentdiv);
       });
 
