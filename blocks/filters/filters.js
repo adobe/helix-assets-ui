@@ -1,10 +1,10 @@
 const ignoredFacets = ['assetID', 'tags', 'multiple', 'background', 'categories', 'foreground', 'sourceDomain'];
-const ignoreSource = ['website'];
+const ignoreSource = ['website', 'rum'];
 const displayNameMap = {
   rum: 'Website',
-  stock: 'Stock',
+  stock: 'Adobe Stock',
   brandportal: 'Brand Portal',
-  aem: 'AEM',
+  aem: 'Adobe Experience Manager',
   type: 'File type',
   sourceType: 'Sources',
   aspectratio: 'Orientation',
@@ -30,8 +30,38 @@ export default function decorate(block) {
         const facetTitle = displayNameMap[facet];
         parentdiv.innerHTML = `<h3>${facetTitle}</h3>`;
         parentdiv.append(facetdiv);
+        // List 'non website' selections
         Object.entries(facets[facet]).forEach(([value, count]) => {
           if (!ignoreSource.includes(value)) {
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = `facet-${facet}-${value}`;
+            checkbox.checked = !!allfacets.filter((f) => f === `${facet}:${value}`).length;
+            const label = document.createElement('label');
+            label.innerHTML = `<span class="value">${displayNameMap[value] !== undefined ? displayNameMap[value] : value}</span><span class="count">${count}</span>`;
+            label.setAttribute('for', checkbox.id);
+            facetdiv.append(checkbox);
+            facetdiv.append(label);
+
+            checkbox.addEventListener('change', () => {
+              const myurl = new URL(window.location.href);
+              if (checkbox.checked) {
+                myurl.searchParams.append('ff', `${facet}:${value}`);
+              } else {
+                const validfacets = myurl.searchParams.getAll('ff')
+                  .filter((v) => v !== `${facet}:${value}`);
+                myurl.searchParams.delete('ff');
+                validfacets.forEach((v) => myurl.searchParams.append('ff', v));
+              }
+
+              window.changeURLState({}, myurl.href);
+            });
+          }
+        });
+
+        // list website selections
+        Object.entries(facets[facet]).forEach(([value, count]) => {
+          if (ignoreSource.includes(value)) {
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
             checkbox.id = `facet-${facet}-${value}`;
