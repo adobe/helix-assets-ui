@@ -60,7 +60,7 @@ export default function decorate(block) {
             });
           } else {
             websiteCount += count;
-        });
+        }
         // list website selections
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
