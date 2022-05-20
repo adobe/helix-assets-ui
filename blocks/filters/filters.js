@@ -59,15 +59,17 @@ export default function decorate(block) {
               window.changeURLState({}, myurl.href);
             });
           } else {
-            websiteCount += count;
-        }
-        // list website selections
+            websiteCount += count; 
+          }
+          
+          {
+            // list website selections
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
             checkbox.id = `facet-sourceType-website`;
             checkbox.checked = !!allfacets.filter((f) => f === `sourceType:website`).length;
             const label = document.createElement('label');
-            label.innerHTML = `<span class="value">Website</span><span class="count">${websiteCount}</span>`;
+            label.innerHTML = `<span class="value">Website</span><span class="count">${count}</span>`;
             label.setAttribute('for', checkbox.id);
             facetdiv.append(checkbox);
             facetdiv.append(label);
@@ -83,8 +85,8 @@ export default function decorate(block) {
                 validfacets.forEach((v) => myurl.searchParams.append('ff', v));
               }
               window.changeURLState({}, myurl.href);
-            });
-
+            });*/
+/*
             Object.entries(facets['sourceDomain']).forEach(([value, count]) => {
               if (true) {
                 const checkbox = document.createElement('input');
@@ -113,7 +115,9 @@ export default function decorate(block) {
               }
             });
             isWebsite = false;
-          }*/
+          }
+        });
+*/
         block.append(parentdiv);
       });
 
