@@ -56,47 +56,19 @@ export default function decorate(block) {
 
               window.changeURLState({}, myurl.href);
             });
-          }
-        });
-
-        // list website selections
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.id = `facet-sourceType-website`;
-        checkbox.checked = !!allfacets.filter((f) => f === `sourceType:website`).length;
-        const label = document.createElement('label');
-        label.innerHTML = `<span class="value">Website</span><span class="count">xxx</span>`;
-        label.setAttribute('for', checkbox.id);
-        facetdiv.append(checkbox);
-        facetdiv.append(label);
-
-        /*checkbox.addEventListener('change', () => {
-          const myurl = new URL(window.location.href);
-          if (checkbox.checked) {
-            myurl.searchParams.append('ff', `${facet}:${value}`);
           } else {
-            const validfacets = myurl.searchParams.getAll('ff')
-              .filter((v) => v !== `${facet}:${value}`);
-            myurl.searchParams.delete('ff');
-            validfacets.forEach((v) => myurl.searchParams.append('ff', v));
-          }
-
-          window.changeURLState({}, myurl.href);
-        });*/
-
-        Object.entries(facets['sourceDomain']).forEach(([value, count]) => {
-          if (ignoreSource.includes(value)) {
+            // list website selections
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
-            checkbox.id = `facet-${facet}-${value}`;
-            checkbox.checked = !!allfacets.filter((f) => f === `${facet}:${value}`).length;
+            checkbox.id = `facet-sourceType-website`;
+            checkbox.checked = !!allfacets.filter((f) => f === `sourceType:website`).length;
             const label = document.createElement('label');
-            label.innerHTML = `<span class="value">${displayNameMap[value] !== undefined ? displayNameMap[value] : value}</span><span class="count">${count}</span>`;
+            label.innerHTML = `<span class="value">Website</span><span class="count">xxx</span>`;
             label.setAttribute('for', checkbox.id);
             facetdiv.append(checkbox);
             facetdiv.append(label);
 
-            checkbox.addEventListener('change', () => {
+            /*checkbox.addEventListener('change', () => {
               const myurl = new URL(window.location.href);
               if (checkbox.checked) {
                 myurl.searchParams.append('ff', `${facet}:${value}`);
@@ -108,6 +80,34 @@ export default function decorate(block) {
               }
 
               window.changeURLState({}, myurl.href);
+            });*/
+
+            Object.entries(facets['sourceDomain']).forEach(([value, count]) => {
+              if (ignoreSource.includes(value)) {
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = `facet-${facet}-${value}`;
+                checkbox.checked = !!allfacets.filter((f) => f === `${facet}:${value}`).length;
+                const label = document.createElement('label');
+                label.innerHTML = `<span class="value">${displayNameMap[value] !== undefined ? displayNameMap[value] : value}</span><span class="count">${count}</span>`;
+                label.setAttribute('for', checkbox.id);
+                facetdiv.append(checkbox);
+                facetdiv.append(label);
+
+                checkbox.addEventListener('change', () => {
+                  const myurl = new URL(window.location.href);
+                  if (checkbox.checked) {
+                    myurl.searchParams.append('ff', `${facet}:${value}`);
+                  } else {
+                    const validfacets = myurl.searchParams.getAll('ff')
+                      .filter((v) => v !== `${facet}:${value}`);
+                    myurl.searchParams.delete('ff');
+                    validfacets.forEach((v) => myurl.searchParams.append('ff', v));
+                  }
+
+                  window.changeURLState({}, myurl.href);
+                });
+              }
             });
           }
         });
