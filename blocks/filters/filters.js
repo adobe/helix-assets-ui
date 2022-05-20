@@ -67,19 +67,16 @@ export default function decorate(block) {
             checkbox.id = `facet-sourceType-website`;
             checkbox.checked = !!allfacets.filter((f) => f === `sourceType:website`).length;
             const label = document.createElement('label');
-            label.innerHTML = `<span class="value">Website</span><span class="count">${count}</span>`;
+            label.innerHTML = `<span class="value">Website</span><span class="count">${websiteCount}</span>`;
             label.setAttribute('for', checkbox.id);
             facetdiv.append(checkbox);
             facetdiv.append(label);
-          }
-          
-          
             
-
-            /*checkbox.addEventListener('change', () => {
+            checkbox.addEventListener('change', () => {
               const myurl = new URL(window.location.href);
               if (checkbox.checked) {
-                myurl.searchParams.append('ff', `${facet}:${value}`);
+                myurl.searchParams.append('ff', `sourceType:rum`);
+                myurl.searchParams.append('ff', `sourceType:website`);
               } else {
                 const validfacets = myurl.searchParams.getAll('ff')
                   .filter((v) => v !== `${facet}:${value}`);
@@ -87,7 +84,9 @@ export default function decorate(block) {
                 validfacets.forEach((v) => myurl.searchParams.append('ff', v));
               }
               window.changeURLState({}, myurl.href);
-            });*/
+            });
+          }
+          
 /*
             Object.entries(facets['sourceDomain']).forEach(([value, count]) => {
               if (true) {
