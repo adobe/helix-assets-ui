@@ -60,9 +60,7 @@ export default function decorate(block) {
             });
           } else if (ignoreSource.includes(value) && facet == 'sourceType'){
             websiteCount += count; 
-          }
-          
-          
+            
             // list website selections
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
@@ -73,6 +71,10 @@ export default function decorate(block) {
             label.setAttribute('for', checkbox.id);
             facetdiv.append(checkbox);
             facetdiv.append(label);
+          }
+          
+          
+            
 
             /*checkbox.addEventListener('change', () => {
               const myurl = new URL(window.location.href);
