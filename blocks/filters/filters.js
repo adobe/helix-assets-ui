@@ -21,6 +21,8 @@ export default function decorate(block) {
 
     const allfacets = url.searchParams.getAll('ff');
 
+    let isWebsite = true;
+
     Object.keys(facets)
       .filter((facet) => !ignoredFacets.includes(facet))
       .forEach((facet) => {
@@ -56,7 +58,7 @@ export default function decorate(block) {
 
               window.changeURLState({}, myurl.href);
             });
-          } else {
+          } else if (isWebsite) {
             // list website selections
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
@@ -109,6 +111,7 @@ export default function decorate(block) {
                 });
               }
             });
+            isWebsite = false;
           }
         });
 
