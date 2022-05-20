@@ -83,7 +83,7 @@ export default function decorate(block) {
             });*/
 
             Object.entries(facets['sourceDomain']).forEach(([value, count]) => {
-              if (ignoreSource.includes(value)) {
+              if (true) {
                 const checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
                 checkbox.id = `facet-${facet}-${value}`;
