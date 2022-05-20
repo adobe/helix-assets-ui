@@ -58,7 +58,7 @@ export default function decorate(block) {
 
               window.changeURLState({}, myurl.href);
             });
-          } else {
+          } else if (ignoreSource.includes(value)){
             websiteCount += count; 
           }
           
@@ -116,7 +116,6 @@ export default function decorate(block) {
             isWebsite = false;
           }*/
         });
-
         block.append(parentdiv);
       });
 
