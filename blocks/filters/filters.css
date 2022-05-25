@@ -6,7 +6,7 @@ div.filters-container.show-sidebar {
 div.filters-container {
   display: grid;
   grid-template-areas: "none results";
-  grid-template-columns: 0px 100%;
+  grid-template-columns: 0 100%;
   align-items: start;
 }
 
@@ -41,11 +41,11 @@ div.filters label .count {
   color: #888;
 }
 
-div.filters label .count:before {
+div.filters label .count::before {
   content: " (";
 }
 
-div.filters label .count:after {
+div.filters label .count::after {
   content: ")";
 }
 
