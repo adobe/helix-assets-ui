@@ -1,4 +1,4 @@
-const ignoredFacets = ['assetID', 'tags', 'multiple', 'background', 'categories', 'foreground', 'sourceDomain'];
+const ignoredFacets = ['assetID', 'tags', 'multiple', 'background', 'categories', 'foreground'];
 const ignoreSource = ['website', 'rum'];
 const displayNameMap = {
   rum: 'Website',
