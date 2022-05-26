@@ -11,11 +11,11 @@ export default function decorate(block) {
   block.appendChild(list);
 
   const masonry = document.createElement('div');
-  masonry.className = 'asset-results-masonry';
+  masonry.className = 'asset-results-masonry hidden';
   block.appendChild(masonry);
 
   const grid = document.createElement('div');
-  grid.className = 'asset-results-grid hidden';
+  grid.className = 'asset-results-grid';
   block.append(grid);
 
   class Masonry {
@@ -93,6 +93,23 @@ export default function decorate(block) {
     return `${number.toFixed()} ${units[u]}`;
   }
 
+  function getDisplayPath(href, source) {
+    const brandportal = '/assetdetails.html/content/dam/mac/marketinghub/';
+    const aem = '/assetdetails.html/content/dam';
+    const url = new URL(href);
+    let path = '';
+    if (source === 'stock') {
+      path = (`${href.substring(0, href.indexOf('?'))}?prev_url=detail`);
+    } else if (source === 'aem') {
+      path = url.pathname.substring(aem.length, url.pathname.lastIndexOf('/'));
+    } else if (source === 'brandportal') {
+      path = url.pathname.substring(brandportal.length, url.pathname.lastIndexOf('/'));
+    } else {
+      path = url.pathname.substring(0, url.pathname.lastIndexOf('/'));
+    }
+    return path;
+  }
+
   const showResults = (results) => {
     const datalist = document.getElementById('query-suggestions');
     if (results.facets && datalist) {
@@ -106,7 +123,7 @@ export default function decorate(block) {
           });
         });
     }
-    counter.innerHTML = `<div class="asset-results-heading"><img src="/blocks/asset-results/filter.svg">Assets & Files (${results.nbHits})</div>
+    counter.innerHTML = `<div class="asset-results-heading"><img src="/blocks/asset-results/filter.svg">Assets & files (${results.nbHits})</div>
   <div class="asset-results-view-switcher assets-results-view-masonry"></div>`;
 
     const filterbutton = counter.firstElementChild;
@@ -138,12 +155,15 @@ export default function decorate(block) {
       const detailURL = new URL(window.location.href);
       detailURL.searchParams.set('q', `assetID:${hit.assetID}`);
       imageURL.searchParams.set('width', 750);
-      const picture = createOptimizedPicture(imageURL.href, hit.caption, false, [{ width: '750' }]);
+      const description = hit.alt || hit.caption;
+      const picture = createOptimizedPicture(imageURL.href, description, false, [{ width: '750' }]);
+      const path = getDisplayPath(topurl.href, hit.sourceType);
+
       item.innerHTML = `
         <a href="${detailURL.href}">${picture.outerHTML}</a>
         <div class="asset-results-details source-${hit.sourceType}">
-          <p class="asset-results-caption"><a href="${detailURL.href}">${hit.caption}</a></p>
-          <p class="asset-results-source"><a href="${topurl.href}">${hit.sourceDomain}</a></p>
+          <p class="asset-results-caption"><a href="${detailURL.href}">${description}</a></p>
+          <p class="asset-results-source"><a href="${topurl.href}">${path}</a></p>
           <p class="asset-results-views">${humanSize(hit.views)}</p>
           <p class="asset-results-dimensions">${hit.height} x ${hit.width}</p>
           <p class="asset-results-tags"><span>${(hit.tags || []).join('</span> <span>')}</span></p>
@@ -159,8 +179,7 @@ export default function decorate(block) {
     grid.append(list);
   };
 
-  const showOneUp = (asset, otherassets) => {
-    console.log(otherassets);
+  const showOneUp = async (asset, otherassets) => {
     const createInfo = (panelConfig) => {
       const panel = document.createElement('div');
       panelConfig.forEach((sectionConfig) => {
@@ -172,20 +191,20 @@ export default function decorate(block) {
         sectionConfig.infos
           .filter((infoConfig) => infoConfig.value)
           .forEach((infoConfig) => {
-          const info = document.createElement('dl');
-          info.innerHTML = `<dt>${infoConfig.title}</dt><dd>${infoConfig.value}</dd>`;
-          if (infoConfig.alts && infoConfig.alts.length) {
-            Array.from(new Set(infoConfig.alts))
-              .filter(alt => alt !== infoConfig.value)
-              .forEach(alt => {
-                const ddalt = document.createElement('dd');
-                ddalt.className = 'alt';
-                ddalt.innerHTML = alt;
-                info.append(ddalt);
-              });
-          }
-          section.append(info);
-        });
+            const info = document.createElement('dl');
+            info.innerHTML = `<dt>${infoConfig.title}</dt><dd>${infoConfig.value}</dd>`;
+            if (infoConfig.alts && infoConfig.alts.length) {
+              Array.from(new Set(infoConfig.alts))
+                .filter((alt) => alt !== infoConfig.value)
+                .forEach((alt) => {
+                  const ddalt = document.createElement('dd');
+                  ddalt.className = 'alt';
+                  ddalt.innerHTML = alt;
+                  info.append(ddalt);
+                });
+            }
+            section.append(info);
+          });
         panel.append(section);
       });
       return panel;
@@ -217,42 +236,40 @@ export default function decorate(block) {
     });
     const pictureDiv = modal.querySelector('.asset-results-oneup-picture');
     const moreDiv = modal.querySelector('.asset-results-oneup-more');
-    console.log(asset);
+
+    const assetDescription = asset.alt || asset.caption;
+    const createdDate = asset.created ? new Date(asset.created).toLocaleDateString() : 'N/A';
+    const modDate = asset.modified ? new Date(asset.modified).toLocaleDateString() : 'N/A';
+
+    const displayNameMap = {
+      rum: 'Website',
+      stock: 'Stock',
+      brandportal: 'Brand Portal',
+      aem: 'AEM',
+    };
+
     const infoConfig = [{
       title: 'Information',
       infos: [
-        { title: 'File', value: asset?.type.toUpperCase(), alts: otherassets.map(o => o.type?.toUpperCase()) },
-        { title: 'Created', value: asset?.created && new Date(asset.created).toLocaleDateString() },
-        { title: 'Modified', value: asset?.modified && new Date(asset.modified).toLocaleDateString() },
+        { title: 'File type', value: asset?.type.toUpperCase(), alts: otherassets.map((o) => o.type?.toUpperCase()) },
+        { title: 'Description', value: assetDescription, alts: otherassets.map((o) => (o.alt || o.caption)) },
+        { title: 'Created', value: createdDate },
+        { title: 'Modified', value: modDate },
         { title: 'Size', value: '193MB' },
-        { title: 'Width', value: `${asset.width}px`, alts: otherassets.map(o => `${o.width}px`) },
-        { title: 'Height', value: `${asset.height}px`, alts: otherassets.map(o => `${o.height}px`) },
-        { title: 'Access', value: 'Public' },
-      ],
-    }, {
-      title: 'Source',
-      infos: [
-        { title: 'Image', value: asset.image },
-        { title: 'URL', value: asset.topurl },
-      ],
-    }, {
-      title: 'Other',
-      infos: [
-        { title: 'Human Description', value: asset.alt, alts: otherassets.map(o => o.alt) },
-        { title: 'Machine Description', value: asset.caption, alts: otherassets.map(o => o.caption) },
-        { title: 'SKU', value: '000000' },
-        { title: 'Status', value: 'Approved' },
+        { title: 'Width', value: `${asset.width}px`, alts: otherassets.map((o) => `${o.width}px`) },
+        { title: 'Height', value: `${asset.height}px`, alts: otherassets.map((o) => `${o.height}px`) },
+        { title: 'Source', value: displayNameMap[asset.sourceType] },
+        { title: 'File name', value: 'Filename' },
+        { title: 'Path', value: `<a href="${asset.sourceURL || asset.image}">${getDisplayPath((asset.sourceURL || asset.image), asset.sourceType)}</a>` },
         { title: 'Tags', value: `<span>${(asset.tags || []).join('</span> <span>')}</span>` },
-        { title: 'Categories', value: `<span>${(asset.categories || []).join('</span> <span>')}</span>` },
-        { title: 'Project', value: asset.sourceDomain },
       ],
     }];
 
     const infoDiv = modal.querySelector('.asset-results-oneup-info');
     const info = createInfo(infoConfig);
     infoDiv.append(info);
-    
-    otherassets.forEach(otherasset => {
+
+    otherassets.forEach((otherasset) => {
       const a = document.createElement('a');
       a.href = `#${otherasset.objectID}`;
       a.appendChild(createOptimizedPicture(otherasset.image));
@@ -260,17 +277,19 @@ export default function decorate(block) {
       a.addEventListener('click', (e) => {
         e.preventDefault();
         const myasset = otherasset;
-        const allotherassets = [asset, ...otherassets].filter(a => a !== myasset);
+        const allotherassets = [asset, ...otherassets].filter((other) => other !== myasset);
         modal.remove();
         showOneUp(myasset, allotherassets);
       });
     });
-    
+
     const similarserviceurl = new URL('https://helix-pages.anywhere.run/helix-services/asset-ingestor@v1');
     similarserviceurl.searchParams.set('url', asset.image);
-    const similarassets = fetch(similarserviceurl.href).then(async res => {
+
+    try {
+      const res = await fetch(similarserviceurl.href);
       const { hits } = await res.json();
-      hits.forEach(otherasset => {
+      hits.forEach((otherasset) => {
         const a = document.createElement('a');
         const detailurl = new URL(window.location.href);
         detailurl.searchParams.set('q', `assetID:${otherasset.assetID}`);
@@ -278,7 +297,10 @@ export default function decorate(block) {
         a.appendChild(createOptimizedPicture(otherasset.image));
         moreDiv.appendChild(a);
       });
-    });
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.log('Could not load similar images:', e);
+    }
 
     pictureDiv.appendChild(createOptimizedPicture(asset.image));
     block.append(modal);
@@ -290,11 +312,7 @@ export default function decorate(block) {
     const index = myurl.searchParams.get('index') || 'assets';
 
     const terms = query.split(' ');
-    
-    console.log(Array.from(myurl.searchParams.entries())
-      .filter(([param]) => param.match(/f:(.*)-minimum/))
-    );
-    
+
     const filters = [
       ...(Array.from(myurl.searchParams.entries())
         .filter(([param]) => param.match(/f:(.*)-minimum/))

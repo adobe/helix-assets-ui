@@ -39,7 +39,7 @@
 }
 
 html {
-  text-rendering: optimizelegibility;
+  text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
 
