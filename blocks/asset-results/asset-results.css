@@ -207,6 +207,8 @@ main p.asset-results-tags {
   margin: 0.6em 0;
   display: flex;
   flex-wrap: wrap;
+  max-height: 55px;
+  overflow: scroll;
 }
 
 main .asset-results-views::before, main .asset-results-dimensions::before {
