@@ -65,12 +65,12 @@ export default function decorate(block) {
           let websiteCounts = 0;
           Object.entries(facets[facet]).forEach(([value, count]) => {
             if (ignoreSource.includes(value)) {
-              websiteCounts += websiteCounts;
+              websiteCounts += count;
             } 
             //
             
           }); 
-          console.log('Count:' + count); 
+          console.log('Count:' + websiteCounts); 
         }
         if (facet === 'sourceDomain') {
           let websiteSources = new Map();
