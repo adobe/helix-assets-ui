@@ -65,7 +65,7 @@ export default function decorate(block) {
           let websiteCounts = 0;
           Object.entries(facets[facet]).forEach(([value, count]) => {
             if (ignoreSource.includes(value)) {
-              websiteCounts += count;
+              websiteCounts += websiteCounts;
             } 
             //
             
