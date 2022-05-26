@@ -285,16 +285,22 @@ export default function decorate(block) {
 
     const similarserviceurl = new URL('https://helix-pages.anywhere.run/helix-services/asset-ingestor@v1');
     similarserviceurl.searchParams.set('url', asset.image);
-    const res = await fetch(similarserviceurl.href);
-    const { hits } = await res.json();
-    hits.forEach((otherasset) => {
-      const a = document.createElement('a');
-      const detailurl = new URL(window.location.href);
-      detailurl.searchParams.set('q', `assetID:${otherasset.assetID}`);
-      a.href = detailurl.href;
-      a.appendChild(createOptimizedPicture(otherasset.image));
-      moreDiv.appendChild(a);
-    });
+
+    try {
+      const res = await fetch(similarserviceurl.href);
+      const { hits } = await res.json();
+      hits.forEach((otherasset) => {
+        const a = document.createElement('a');
+        const detailurl = new URL(window.location.href);
+        detailurl.searchParams.set('q', `assetID:${otherasset.assetID}`);
+        a.href = detailurl.href;
+        a.appendChild(createOptimizedPicture(otherasset.image));
+        moreDiv.appendChild(a);
+      });
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.log('Could not load similar images:', e);
+    }
 
     pictureDiv.appendChild(createOptimizedPicture(asset.image));
     block.append(modal);
