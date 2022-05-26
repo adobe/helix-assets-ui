@@ -58,63 +58,28 @@ export default function decorate(block) {
 
               window.changeURLState({}, myurl.href);
             });
-          } else if (ignoreSource.includes(value) && facet === 'sourceType') {
-            websiteCount += count;
-
-            // list website selections
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.id = 'facet-sourceType-website';
-            checkbox.checked = !!allfacets.filter((f) => f === 'sourceType:rum').length;
-            const label = document.createElement('label');
-            label.innerHTML = `<span class="value">Website</span><span class="count">${websiteCount}</span>`;
-            label.setAttribute('for', checkbox.id);
-            facetdiv.append(checkbox);
-            facetdiv.append(label);
-
-            checkbox.addEventListener('change', () => {
-              const myurl = new URL(window.location.href);
-              if (checkbox.checked) {
-                myurl.searchParams.append('ff', 'sourceType:rum');
-                // myurl.searchParams.append('ff', `sourceType:website`);
-              } else {
-                const validfacets = myurl.searchParams.getAll('ff')
-                  .filter((v) => v !== `${facet}:${value}`);
-                myurl.searchParams.delete('ff');
-                validfacets.forEach((v) => myurl.searchParams.append('ff', v));
-              }
-              window.changeURLState({}, myurl.href);
-            });
           }
-
-          // Object.entries(facets['sourceDomain']).forEach(([value, count]) => {
-          //   const checkbox = document.createElement('input');
-          //   checkbox.type = 'checkbox';
-          //   checkbox.id = `facet-${facet}-${value}`;
-          //   checkbox.checked = !!allfacets.filter((f) => f === `${facet}:${value}`).length;
-          //   const label = document.createElement('label');
-          //   const t = displayNameMap[value] !== undefined ? displayNameMap[value] : value;
-          //   label.innerHTML=`<span class="value">${t}</span><span class="count">${count}</span>`;
-          //   label.setAttribute('for', checkbox.id);
-          //   facetdiv.append(checkbox);
-          //   facetdiv.append(label);
-
-          //   checkbox.addEventListener('change', () => {
-          //     const myurl = new URL(window.location.href);
-          //     if (checkbox.checked) {
-          //       myurl.searchParams.append('ff', `${facet}:${value}`);
-          //     } else {
-          //       const validfacets = myurl.searchParams.getAll('ff')
-          //         .filter((v) => v !== `${facet}:${value}`);
-          //       myurl.searchParams.delete('ff');
-          //       validfacets.forEach((v) => myurl.searchParams.append('ff', v));
-          //     }
-
-          //     window.changeURLState({}, myurl.href);
-          //   });
-          // });
-          // isWebsite = false;
         });
+        // bucket all 'websites'
+        if (facet === 'sourceType') {
+          let websiteCounts = 0;
+          Object.entries(facets[facet]).forEach(([value, count]) => {
+            if (ignoreSource.includes(value)) {
+              websiteCounts += count;
+            } 
+            //
+            
+          }); 
+          console.log('Count:' + count); 
+        }
+        if (facet === 'sourceDomain') {
+          let websiteSources = new Map();
+          Object.entries(facets[facet]).forEach(([value, count]) => {
+            websiteSources.set(value, count);
+            
+          });
+          console.log('websiteSources', websiteSources);
+        }
         block.append(parentdiv);
       });
 
@@ -125,7 +90,6 @@ export default function decorate(block) {
       const parentdiv = document.createElement('div');
       const facetdiv = document.createElement('div');
       facetdiv.classList.add('filter');
-      // parentdiv.innerHTML = `<h3>${numprop}</h3>`;
 
       const input = document.createElement('input');
       input.type = 'number';
@@ -134,19 +98,9 @@ export default function decorate(block) {
       label.setAttribute('for', input.id);
       label.innerHTML = `minimum ${numprop}`;
 
-      // const input2 = document.createElement('input');
-      // input2.type = 'number';
-      // input2.id = `f:${numprop}-maximum`;
-      // const label2 = document.createElement('label');
-      // label2.setAttribute('for', input2.id);
-      // label2.innerHTML = `maximum ${numprop}`;
-
       if (url.searchParams.has(input.id)) {
         input.valueAsNumber = url.searchParams.get(input.id).match(/[0-9]+/);
       }
-      // if (url.searchParams.has(input2.id)) {
-      //  input2.valueAsNumber = url.searchParams.get(input2.id).match(/[0-9]+/);
-      // }
 
       const el = ({ target }) => {
         const myurl = new URL(window.location.href);
@@ -159,12 +113,9 @@ export default function decorate(block) {
       };
 
       input.addEventListener('change', el);
-      // input2.addEventListener('change', el);
 
       facetdiv.append(input);
       facetdiv.append(label);
-      // facetdiv.append(input2);
-      // facetdiv.append(label2);
       parentdiv.append(facetdiv);
       resolutionDiv.append(parentdiv);
       block.append(resolutionDiv);
