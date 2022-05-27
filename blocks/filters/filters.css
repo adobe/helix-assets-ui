@@ -1,5 +1,5 @@
 div.filters-container.show-sidebar {
-  grid-template-columns: 220px auto;
+  grid-template-columns: 260px auto;
   grid-template-areas: "sidebar results";
 }
 
@@ -54,4 +54,12 @@ div.facet {
   grid-template-columns: 40px auto;
   max-height: 200px;
   overflow: scroll;
+}
+
+div.domainfacet {
+  display: grid;
+  grid-template-columns: 30px max-content;
+  padding: 35px;
+  padding-top: 5px;
+  padding-bottom: inherit;
 }

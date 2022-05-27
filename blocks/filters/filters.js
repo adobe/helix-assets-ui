@@ -1,7 +1,8 @@
 const ignoredFacets = ['assetID', 'tags', 'multiple', 'background', 'categories', 'foreground'];
+const ignoreSourceDomains = ['cc-author.prod.corp.adobe.com', 'marketinghub', 'stock.adobe.com', 'www.hp.com', 'photoshopcamera.app.link', 'adobe-robohelp-launch-2020.meetus.adobeevents.com', 'main--blog--adobe.hlx.page', 'blogs.nvidia.com', 'www.adobeprerelease.com'];
 const ignoreSource = ['website', 'rum'];
 const displayNameMap = {
-  rum: 'Website',
+  website: 'Website',
   stock: 'Adobe Stock',
   brandportal: 'Brand Portal',
   aem: 'Adobe Experience Manager',
@@ -21,67 +22,116 @@ export default function decorate(block) {
 
     const allfacets = url.searchParams.getAll('ff');
 
-    let websiteCount = 0;
+    const facetGroups = {};
+    let websiteCounts = 0;
+    const websiteSources = {};
 
     Object.keys(facets)
       .filter((facet) => !ignoredFacets.includes(facet))
       .forEach((facet) => {
-        const parentdiv = document.createElement('div');
-        const facetdiv = document.createElement('div');
-        facetdiv.classList.add('facet');
-        const facetTitle = displayNameMap[facet];
-        parentdiv.innerHTML = `<h3>${facetTitle}</h3>`;
-        parentdiv.append(facetdiv);
+        const facetEntries = {};
         // List 'non website' selections
         Object.entries(facets[facet]).forEach(([value, count]) => {
           if (!ignoreSource.includes(value)) {
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.id = `facet-${facet}-${value}`;
-            checkbox.checked = !!allfacets.filter((f) => f === `${facet}:${value}`).length;
-            const label = document.createElement('label');
-            label.innerHTML = `<span class="value">${displayNameMap[value] !== undefined ? displayNameMap[value] : value}</span><span class="count">${count}</span>`;
-            label.setAttribute('for', checkbox.id);
-            facetdiv.append(checkbox);
-            facetdiv.append(label);
+            facetEntries[value] = {};
+            facetEntries[value].count = count;
+          }
+        });
+        if (facet !== 'sourceDomain') {
+          facetGroups[facet] = facetEntries;
+        }
 
-            checkbox.addEventListener('change', () => {
+        // count all 'websites'
+        if (facet === 'sourceType') {
+          Object.entries(facets[facet]).forEach(([value, count]) => {
+            if (ignoreSource.includes(value)) {
+              websiteCounts += count;
+            }
+          });
+        }
+
+        if (facet === 'sourceDomain') {
+          Object.entries(facets[facet]).forEach(([value, count]) => {
+            if (!ignoreSourceDomains.includes(value)) {
+              websiteSources[value] = count;
+            }
+          });
+        }
+      });
+    if (facetGroups.sourceType !== undefined && websiteCounts > 0) {
+      facetGroups.sourceType.website = {};
+      facetGroups.sourceType.website.count = websiteCounts;
+      facetGroups.sourceType.website.domains = websiteSources;
+    }
+
+    Object.keys(facetGroups).forEach((facet) => {
+      const parentdiv = document.createElement('div');
+      const facetdiv = document.createElement('div');
+      facetdiv.classList.add('facet');
+      const facetTitle = displayNameMap[facet];
+      parentdiv.innerHTML = `<h3>${facetTitle}</h3>`;
+      parentdiv.append(facetdiv);
+      // List 'non website' selections
+      Object.keys(facetGroups[facet]).forEach((facetEntry) => {
+        const checkbox = document.createElement('input');
+        const assetCount = facetGroups[facet][facetEntry].count;
+        const value = facetEntry;
+        checkbox.type = 'checkbox';
+        checkbox.id = `facet-${facet}-${value}`;
+        checkbox.checked = !!allfacets.filter((f) => f === `${facet}:${value}`).length;
+        const label = document.createElement('label');
+        label.innerHTML = `<span class="value">${displayNameMap[value] !== undefined ? displayNameMap[value] : value}</span><span class="count">${assetCount}</span>`;
+        label.setAttribute('for', checkbox.id);
+        facetdiv.append(checkbox);
+        facetdiv.append(label);
+
+        checkbox.addEventListener('change', () => {
+          const myurl = new URL(window.location.href);
+          if (checkbox.checked) {
+            myurl.searchParams.append('ff', `${facet}:${value}`);
+          } else {
+            const validfacets = myurl.searchParams.getAll('ff')
+              .filter((v) => v !== `${facet}:${value}`);
+            myurl.searchParams.delete('ff');
+            validfacets.forEach((v) => myurl.searchParams.append('ff', v));
+          }
+
+          window.changeURLState({}, myurl.href);
+        });
+        if (value === 'website') {
+          const facetName = 'sourceDomain';
+          const domainFacetdiv = document.createElement('div');
+          domainFacetdiv.classList.add('domainfacet');
+          facetdiv.append(domainFacetdiv);
+          Object.entries(facetGroups[facet][facetEntry].domains).forEach(([valuex, countx]) => {
+            const checkboxx = document.createElement('input');
+            checkboxx.type = 'checkbox';
+            checkboxx.id = `facet-${facetName}-${valuex}`;
+            checkboxx.checked = !!allfacets.filter((f) => f === `${facetName}:${valuex}`).length;
+            const labelx = document.createElement('label');
+            labelx.innerHTML = `<span class="value">${displayNameMap[valuex] !== undefined ? displayNameMap[valuex] : valuex}</span><span class="count">${countx}</span>`;
+            labelx.setAttribute('for', checkboxx.id);
+            domainFacetdiv.append(checkboxx);
+            domainFacetdiv.append(labelx);
+
+            checkboxx.addEventListener('change', () => {
               const myurl = new URL(window.location.href);
-              if (checkbox.checked) {
-                myurl.searchParams.append('ff', `${facet}:${value}`);
+              if (checkboxx.checked) {
+                myurl.searchParams.append('ff', `${facetName}:${valuex}`);
               } else {
                 const validfacets = myurl.searchParams.getAll('ff')
-                  .filter((v) => v !== `${facet}:${value}`);
+                  .filter((v) => v !== `${facetName}:${valuex}`);
                 myurl.searchParams.delete('ff');
                 validfacets.forEach((v) => myurl.searchParams.append('ff', v));
               }
 
               window.changeURLState({}, myurl.href);
             });
-          }
-        });
-        // bucket all 'websites'
-        if (facet === 'sourceType') {
-          let websiteCounts = 0;
-          Object.entries(facets[facet]).forEach(([value, count]) => {
-            if (ignoreSource.includes(value)) {
-              websiteCounts += count;
-            } 
-            //
-            
-          }); 
-          console.log('Count:' + websiteCounts); 
-        }
-        if (facet === 'sourceDomain') {
-          let websiteSources = new Map();
-          Object.entries(facets[facet]).forEach(([value, count]) => {
-            websiteSources.set(value, count);
-            
           });
-          console.log('websiteSources', websiteSources);
         }
-        block.append(parentdiv);
       });
+      block.append(parentdiv);
+    });
 
     const resolutionDiv = document.createElement('div');
     resolutionDiv.innerHTML = '<h3>Resolution</h3>';
