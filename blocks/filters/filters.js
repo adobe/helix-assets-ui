@@ -33,8 +33,9 @@ export default function decorate(block) {
         // List 'non website' selections
         Object.entries(facets[facet]).forEach(([value, count]) => {
           if (!ignoreSource.includes(value)) {
-            facetEntries[value] = {};
-            facetEntries[value].count = count;
+            facetEntries[value] = {
+              count,
+            };
           }
         });
         if (facet !== 'sourceDomain') {
@@ -51,9 +52,10 @@ export default function decorate(block) {
         }
       });
     if (facetGroups.sourceType !== undefined && websiteCounts > 0) {
-      facetGroups.sourceType.website = {};
-      facetGroups.sourceType.website.count = websiteCounts;
-      facetGroups.sourceType.website.domains = websiteSources;
+      facetGroups.sourceType.website = {
+        count: websiteCounts,
+        domains: websiteSources,
+      };
     }
 
     Object.keys(facetGroups).forEach((facet) => {
