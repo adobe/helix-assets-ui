@@ -1,5 +1,5 @@
 const ignoredFacets = ['assetID', 'tags', 'multiple', 'background', 'categories', 'foreground'];
-const ignoreSourceDomains = ['cc-author.prod.corp.adobe.com', 'marketinghub', 'stock.adobe.com', 'www.hp.com', 'fonts.adobe.com', 'photoshopcamera.app.link', 'adobe-robohelp-launch-2020.meetus.adobeevents.com', 'main--blog--adobe.hlx.page', 'blogs.nvidia.com', 'www.adobeprerelease.com'];
+const allowSourceDomains = ['www.adobe.com', 'blog.adobe.com'];
 const ignoreSource = ['website', 'rum'];
 const displayNameMap = {
   website: 'Website',
@@ -33,8 +33,9 @@ export default function decorate(block) {
         // List 'non website' selections
         Object.entries(facets[facet]).forEach(([value, count]) => {
           if (!ignoreSource.includes(value)) {
-            facetEntries[value] = {};
-            facetEntries[value].count = count;
+            facetEntries[value] = {
+              count,
+            };
           }
         });
         if (facet !== 'sourceDomain') {
@@ -43,7 +44,7 @@ export default function decorate(block) {
 
         if (facet === 'sourceDomain') {
           Object.entries(facets[facet]).forEach(([value, count]) => {
-            if (!ignoreSourceDomains.includes(value)) {
+            if (allowSourceDomains.includes(value)) {
               websiteSources[value] = count;
               websiteCounts += count;
             }
@@ -51,9 +52,10 @@ export default function decorate(block) {
         }
       });
     if (facetGroups.sourceType !== undefined && websiteCounts > 0) {
-      facetGroups.sourceType.website = {};
-      facetGroups.sourceType.website.count = websiteCounts;
-      facetGroups.sourceType.website.domains = websiteSources;
+      facetGroups.sourceType.website = {
+        count: websiteCounts,
+        domains: websiteSources,
+      };
     }
 
     Object.keys(facetGroups).forEach((facet) => {
