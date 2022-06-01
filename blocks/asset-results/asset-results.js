@@ -218,7 +218,7 @@ export default function decorate(block) {
         Helix Assets
       </div>
       <div class="header-filename"></div>
-      <div class="header-button"><button class="secondary">Done</button></div>
+      <div class="header-button"><button class="secondary">Download</button><button name='close' class="secondary">Done</button></div>
     </div>
     </header>
     <div>
@@ -229,7 +229,7 @@ export default function decorate(block) {
       <div class="asset-results-oneup-more">
       </div>
     </div>`;
-    const closeButton = modal.querySelector('.header-button button');
+    const closeButton = modal.querySelector('.header-button button[name=close]');
     closeButton.addEventListener('click', () => {
       modal.remove();
       window.history.back();
@@ -258,6 +258,7 @@ export default function decorate(block) {
         { title: 'Size', value: '193MB' },
         { title: 'Width', value: `${asset.width}px`, alts: otherassets.map((o) => `${o.width}px`) },
         { title: 'Height', value: `${asset.height}px`, alts: otherassets.map((o) => `${o.height}px`) },
+        { title: 'Usage rights', value: 'Licenced' },
         { title: 'Source', value: displayNameMap[asset.sourceType] },
         { title: 'File name', value: 'Filename' },
         { title: 'Path', value: `<a href="${asset.sourceURL || asset.image}">${getDisplayPath((asset.sourceURL || asset.image), asset.sourceType)}</a>` },
