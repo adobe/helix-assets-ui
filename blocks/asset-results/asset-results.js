@@ -258,7 +258,7 @@ export default function decorate(block) {
         { title: 'Size', value: '193MB' },
         { title: 'Width', value: `${asset.width}px`, alts: otherassets.map((o) => `${o.width}px`) },
         { title: 'Height', value: `${asset.height}px`, alts: otherassets.map((o) => `${o.height}px`) },
-        { title: 'Usage rights', value: 'Licenced' },
+        { title: 'Usage rights', value: 'licensed' },
         { title: 'Source', value: displayNameMap[asset.sourceType] },
         { title: 'File name', value: 'Filename' },
         { title: 'Path', value: `<a href="${asset.sourceURL || asset.image}">${getDisplayPath((asset.sourceURL || asset.image), asset.sourceType)}</a>` },
