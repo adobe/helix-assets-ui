@@ -213,5 +213,24 @@ export default function decorate(block) {
       parentdiv.append(facetdiv);
       block.append(parentdiv);
     });
+
+    // add 'fake' status filter
+    const parentdivx = document.createElement('div');
+    const facetdivx = document.createElement('div');
+    facetdivx.classList.add('facet');
+    parentdivx.innerHTML = '<h3>Status</h3>';
+    parentdivx.append(facetdivx);
+
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.id = 'facet-status-approved';
+    checkbox.checked = false;
+    const labelx = document.createElement('label');
+    labelx.innerHTML = '<span class="value">Approved</span><span></span>';
+    labelx.setAttribute('for', checkbox.id);
+    facetdivx.append(checkbox);
+    facetdivx.append(labelx);
+
+    block.append(parentdivx);
   });
 }
