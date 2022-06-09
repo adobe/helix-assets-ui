@@ -218,7 +218,7 @@ export default function decorate(block) {
         Helix Assets
       </div>
       <div class="header-filename"></div>
-      <div class="header-button"><button class="secondary">Download</button><button name='close' class="secondary">Done</button></div>
+      <div class="header-button"><button class="primary">Download</button><button name='close' class="secondary">Done</button></div>
     </div>
     </header>
     <div>
