@@ -2,6 +2,8 @@ main > div > .asset-results-wrapper {
   max-width: 100%;
   grid-area: results;
   margin-top: 0;
+  margin-right: auto;
+  margin-left: 0;
 }
 
 main .asset-results {
