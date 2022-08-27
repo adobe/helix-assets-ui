@@ -218,7 +218,12 @@ export default function decorate(block) {
         Helix Assets
       </div>
       <div class="header-filename"></div>
-      <div class="header-button"><button class="primary">Download</button><button name='close' class="secondary">Done</button></div>
+      <div class="header-button">
+        <a download="${asset.sourceURL ? asset.sourceURL.split('/').pop() : 'image'}" href="${asset.image}" title="${asset.alt}">
+          <button class="primary">Download</button>
+        </a>
+        <button name='close' class="secondary">Done</button>
+      </div>
     </div>
     </header>
     <div>
