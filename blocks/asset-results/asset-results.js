@@ -110,6 +110,13 @@ export default function decorate(block) {
     return path;
   }
 
+  function getDownloadFilename(asset) {
+    const file = asset.alt || asset.caption || 'image';
+    // get extension from Helix Mediabus URL: https://something.hlx3.page/media_1fffe97fc5519b7f542e5151a70c0a650e49119bd.png#width=319&width=191
+    const ext = asset.image ? asset.image.split('#')[0].split('.').pop() : 'file';
+    return `${file}.${ext}`;
+  }
+
   const showResults = (results) => {
     const datalist = document.getElementById('query-suggestions');
     if (results.facets && datalist) {
@@ -218,7 +225,12 @@ export default function decorate(block) {
         Helix Assets
       </div>
       <div class="header-filename"></div>
-      <div class="header-button"><button class="primary">Download</button><button name='close' class="secondary">Done</button></div>
+      <div class="header-button">
+        <a download="${getDownloadFilename(asset)}" href="${asset.image}" title="${asset.caption}">
+          <button class="primary">Download</button>
+        </a>
+        <button name='close' class="secondary">Done</button>
+      </div>
     </div>
     </header>
     <div>
