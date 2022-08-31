@@ -26,6 +26,7 @@ main .asset-results-view-switcher.assets-results-view-grid {
 
 main .asset-results-view-switcher.assets-results-view-grid::after {
   content: 'Grid View';
+  padding-left: 5px;
 }
 
 main .asset-results-view-switcher.assets-results-view-masonry {
@@ -34,6 +35,7 @@ main .asset-results-view-switcher.assets-results-view-masonry {
 
 main .asset-results-view-switcher.assets-results-view-masonry::after {
   content: 'Masonry View';
+  padding-left: 5px;
 }
 
 main .asset-results-view-switcher::after {
@@ -46,6 +48,7 @@ main .asset-results-view-switcher::after {
   color: #888;
   font-weight: 600;
   font-size: 13px;
+  margin-top: 1.25em;
 }
 
 main .asset-results ol {
@@ -131,7 +134,7 @@ main .asset-results-masonry-item img {
 }
 
 main .asset-results-controls .asset-results-heading img {
-  padding: 5px 10px 5px 0;
+  padding: 2px 10px 5px 0;
   margin-right: 10px;
   border-right: 1px solid #ccc;
 }
