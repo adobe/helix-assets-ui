@@ -11,11 +11,18 @@ export default function decorate(block) {
   block.appendChild(list);
 
   const masonry = document.createElement('div');
-  masonry.className = 'asset-results-masonry hidden';
-  block.appendChild(masonry);
-
   const grid = document.createElement('div');
-  grid.className = 'asset-results-grid';
+
+  const resultsView = window.localStorage.getItem('resultsView');
+  if (resultsView === 'masonry') {
+    masonry.className = 'asset-results-masonry';
+    grid.className = 'asset-results-grid hidden';
+  } else {
+    masonry.className = 'asset-results-masonry hidden';
+    grid.className = 'asset-results-grid';
+  }
+
+  block.appendChild(masonry);
   block.append(grid);
 
   class Masonry {
@@ -131,7 +138,7 @@ export default function decorate(block) {
         });
     }
     counter.innerHTML = `<div class="asset-results-heading"><img src="/blocks/asset-results/filter.svg">Assets & files (${results.nbHits})</div>
-  <div class="asset-results-view-switcher assets-results-view-masonry"></div>`;
+  <div class="asset-results-view-switcher ${resultsView === 'masonry' ? 'assets-results-view-grid' : 'assets-results-view-masonry'}"></div>`;
 
     const filterbutton = counter.firstElementChild;
     filterbutton.addEventListener('click', () => {
@@ -147,9 +154,11 @@ export default function decorate(block) {
       if (switcher.classList.contains('assets-results-view-grid')) {
         switcher.classList.remove('assets-results-view-grid');
         switcher.classList.add('assets-results-view-masonry');
+        window.localStorage.setItem('resultsView', 'grid');
       } else {
         switcher.classList.add('assets-results-view-grid');
         switcher.classList.remove('assets-results-view-masonry');
+        window.localStorage.setItem('resultsView', 'masonry');
       }
       grid.classList.toggle('hidden');
       masonry.classList.toggle('hidden');
@@ -226,9 +235,7 @@ export default function decorate(block) {
       </div>
       <div class="header-filename"></div>
       <div class="header-button">
-        <a download="${getDownloadFilename(asset)}" href="${asset.image}" title="${asset.caption}">
-          <button class="primary">Download</button>
-        </a>
+        <a download="${getDownloadFilename(asset)}" href="${asset.image}" title="${asset.caption}"><button class="primary">Download</button></a>
         <button name='close' class="secondary">Done</button>
       </div>
     </div>
