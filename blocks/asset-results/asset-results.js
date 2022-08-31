@@ -218,11 +218,12 @@ export default function decorate(block) {
     };
     const modal = document.createElement('div');
     modal.classList.add('asset-results-oneup');
+
     modal.innerHTML = `<header>
       <div class="header block" data-block-name="header" data-block-status="loaded">
       <div class="header-brand">
-        <a href="http://localhost:3000/?q=assetID%3A12e16e067b6259f02449f35a35c5b2f7505550167&amp;index=assets"><img src="/styles/adobe.svg"></a>
-        Helix Assets
+        <a href="${window.location.origin}"><img src="${window.tenantLogo}"></a>
+        ${window.tenantTitle}
       </div>
       <div class="header-filename"></div>
       <div class="header-button">
@@ -298,6 +299,7 @@ export default function decorate(block) {
 
     const similarserviceurl = new URL('https://helix-pages.anywhere.run/helix-services/asset-ingestor@v1');
     similarserviceurl.searchParams.set('url', asset.image);
+    similarserviceurl.searchParams.set('tenant', window.tenant);
 
     try {
       const res = await fetch(similarserviceurl.href);
@@ -320,9 +322,13 @@ export default function decorate(block) {
   };
 
   const search = () => {
+    if (!window.algoliaApiKey) {
+      return;
+    }
+
     const myurl = new URL(window.location.href);
     const query = myurl.searchParams.get('q') || '';
-    const index = myurl.searchParams.get('index') || 'assets';
+    const index = myurl.searchParams.get('index') || `${window.tenant}_assets`;
 
     const terms = query.split(' ');
 
@@ -340,10 +346,10 @@ export default function decorate(block) {
       .join(' AND ');
     const words = terms.filter((term) => !term.match(':')).join(' ');
 
-    const url = new URL(`https://SWFXY1CU7X-dsn.algolia.net/1/indexes/${index}`);
+    const url = new URL(`https://${window.alogliaApplicationId}-dsn.algolia.net/1/indexes/${index}`);
     url.searchParams.set('query', words);
-    url.searchParams.set('x-algolia-api-key', 'bd35440a1d9feb709a052226f1aa70d8');
-    url.searchParams.set('x-algolia-application-id', 'SWFXY1CU7X');
+    url.searchParams.set('x-algolia-api-key', window.algoliaApiKey);
+    url.searchParams.set('x-algolia-application-id', window.alogliaApplicationId);
     // only one objectID per assetID
     // (search for "a person wearing sunglasses" for test)
     url.searchParams.set('distinct', !filters.match(/assetID:/));
