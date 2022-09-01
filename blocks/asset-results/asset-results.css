@@ -11,44 +11,27 @@ main .asset-results {
 }
 
 main .asset-results-view-switcher {
-  width: 16px;
+  display: block;
+  float: right;
+  width: 100px;
   height: 32px;
-  background-position: center left;
-  background-size: contain;
+  padding-right: 32px;
+  text-align: right;
+  color: #888;
+  font-weight: 600;
+  font-size: 13px;
   background-repeat: no-repeat;
-  background-image: url('grid.svg');
-  display: inline-block;
+  background-position: 110px 2px;
+  background-size: 16px;
+  cursor: pointer;
 }
 
 main .asset-results-view-switcher.assets-results-view-grid {
   background-image: url('grid.svg');
 }
 
-main .asset-results-view-switcher.assets-results-view-grid::after {
-  content: 'Grid View';
-  padding-left: 5px;
-}
-
 main .asset-results-view-switcher.assets-results-view-masonry {
   background-image: url('masonry.svg');
-}
-
-main .asset-results-view-switcher.assets-results-view-masonry::after {
-  content: 'Masonry View';
-  padding-left: 5px;
-}
-
-main .asset-results-view-switcher::after {
-  display: inline-block;
-  width: 200px;
-  padding: 0;
-  margin: 0;
-  line-height: 0;
-  margin-left: 20px;
-  color: #888;
-  font-weight: 600;
-  font-size: 13px;
-  margin-top: 1.25em;
 }
 
 main .asset-results ol {
@@ -134,9 +117,10 @@ main .asset-results-masonry-item img {
 }
 
 main .asset-results-controls .asset-results-heading img {
-  padding: 2px 10px 5px 0;
+  padding: 5px 10px 5px 0;
   margin-right: 10px;
   border-right: 1px solid #ccc;
+  cursor: pointer;
 }
 
 main .asset-results-oneup .asset-results-oneup-more img {
@@ -166,7 +150,14 @@ main .asset-results-controls {
 }
 
 main .asset-results-controls .asset-results-heading {
-  display: flex;
+  display: block;
+  float: left;
+  width: 300px;
+}
+
+main .asset-results-controls .asset-results-heading-text {
+  vertical-align: top;
+  line-height: 30px;
 }
 
 main .asset-results-masonry {

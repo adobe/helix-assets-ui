@@ -137,10 +137,10 @@ export default function decorate(block) {
           });
         });
     }
-    counter.innerHTML = `<div class="asset-results-heading"><img src="/blocks/asset-results/filter.svg">Assets & files (${results.nbHits})</div>
-  <div class="asset-results-view-switcher ${resultsView === 'masonry' ? 'assets-results-view-grid' : 'assets-results-view-masonry'}"></div>`;
+    counter.innerHTML = `<div class="asset-results-heading"><img src="/blocks/asset-results/filter.svg"><span class="asset-results-heading-text">Assets & Files (${results.nbHits})</span></div>
+  <div class="asset-results-view-switcher ${resultsView === 'masonry' ? 'assets-results-view-grid' : 'assets-results-view-masonry'}">${resultsView === 'masonry' ? 'Grid View' : 'Masonry View'}</div>`;
 
-    const filterbutton = counter.firstElementChild;
+    const filterbutton = counter.querySelector('.asset-results-heading>img');
     filterbutton.addEventListener('click', () => {
       block.parentElement.parentElement.classList.toggle('show-sidebar');
       const url = new URL(window.location.href);
@@ -155,10 +155,12 @@ export default function decorate(block) {
         switcher.classList.remove('assets-results-view-grid');
         switcher.classList.add('assets-results-view-masonry');
         window.localStorage.setItem('resultsView', 'grid');
+        switcher.innerHTML = 'Masonry View';
       } else {
         switcher.classList.add('assets-results-view-grid');
         switcher.classList.remove('assets-results-view-masonry');
         window.localStorage.setItem('resultsView', 'masonry');
+        switcher.innerHTML = 'Grid View';
       }
       grid.classList.toggle('hidden');
       masonry.classList.toggle('hidden');
