@@ -267,7 +267,7 @@ export default function decorate(block) {
       <div class="header block" data-block-name="header" data-block-status="loaded">
       <div class="header-brand">
         <a href="http://localhost:3000/?q=assetID%3A12e16e067b6259f02449f35a35c5b2f7505550167&amp;index=assets"><img src="/styles/adobe.svg"></a>
-        Helix Assets
+        Assets Across Adobe
       </div>
       <div class="header-filename"></div>
       <div class="header-button">
