@@ -236,6 +236,7 @@ main .asset-results-oneup header > div {
   position: fixed;
   left: 0;
   right: 0;
+  height: 30px;
 }
 
 main .asset-results-oneup .asset-results-oneup-more {
