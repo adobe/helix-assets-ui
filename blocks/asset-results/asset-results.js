@@ -146,7 +146,8 @@ export default function decorate(block) {
   }
 
   function getDownloadURL(asset) {
-    return asset.image;
+    // use current origin to make downloads work well in browsers
+    return `${window.location.origin}${new URL(asset.image).pathname}`;
   }
 
   const showResults = (results) => {
