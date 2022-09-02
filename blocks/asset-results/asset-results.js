@@ -25,6 +25,21 @@ export default function decorate(block) {
   block.appendChild(masonry);
   block.append(grid);
 
+  let searchResults = {};
+  let showOneUp;
+
+  function handleOneupClick(e, element) {
+    e.preventDefault();
+
+    const assetID = element.dataset.assetid;
+    const detailURL = new URL(window.location.href);
+    detailURL.search = '';
+    detailURL.searchParams.set('assetId', assetID);
+    window.history.pushState(null, null, detailURL.href);
+
+    showOneUp(searchResults[assetID], []);
+  }
+
   class Masonry {
     constructor(listEl, masonryEl) {
       this.list = listEl;
@@ -63,9 +78,15 @@ export default function decorate(block) {
       items.forEach((result) => {
         const img = result.querySelector('img');
         if (img.complete && add) {
+          // const item = result.cloneNode(true);
           const item = document.createElement('div');
           item.className = 'asset-results-masonry-item';
           item.innerHTML = result.innerHTML;
+
+          item.querySelectorAll('a:first-child, .asset-results-caption a').forEach((el) => {
+            el.addEventListener('click', (e) => handleOneupClick(e, el));
+          });
+
           const col = findBestCol();
           col.dataset.height = +col.dataset.height + (img.height / img.width);
           col.append(item);
@@ -124,7 +145,12 @@ export default function decorate(block) {
     return `${file}.${ext}`;
   }
 
+  function getDownloadURL(asset) {
+    return asset.image;
+  }
+
   const showResults = (results) => {
+    searchResults = {};
     const datalist = document.getElementById('query-suggestions');
     if (results.facets && datalist) {
       Object.entries(results.facets)
@@ -167,20 +193,24 @@ export default function decorate(block) {
     });
 
     results.hits.forEach((hit) => {
+      searchResults[hit.assetID] = hit;
+
       const item = document.createElement('li');
       const topurl = new URL(hit.topurl || hit.sourceURL || hit.image);
       const imageURL = new URL(hit.image);
       const detailURL = new URL(window.location.href);
-      detailURL.searchParams.set('q', `assetID:${hit.assetID}`);
+      detailURL.search = '';
+      detailURL.searchParams.set('assetId', hit.assetID);
+
       imageURL.searchParams.set('width', 750);
       const description = hit.alt || hit.caption;
       const picture = createOptimizedPicture(imageURL.href, description, false, [{ width: '750' }]);
       const path = getDisplayPath(topurl.href, hit.sourceType);
 
       item.innerHTML = `
-        <a href="${detailURL.href}">${picture.outerHTML}</a>
+        <a href="${detailURL.href}" data-assetid="${hit.assetID}">${picture.outerHTML}</a>
         <div class="asset-results-details source-${hit.sourceType}">
-          <p class="asset-results-caption"><a href="${detailURL.href}">${description}</a></p>
+          <p class="asset-results-caption"><a href="${detailURL.href}" data-assetid="${hit.assetID}">${description}</a></p>
           <p class="asset-results-source"><a href="${topurl.href}">${path}</a></p>
           <p class="asset-results-views">${humanSize(hit.views)}</p>
           <p class="asset-results-dimensions">${hit.height} x ${hit.width}</p>
@@ -188,6 +218,9 @@ export default function decorate(block) {
         </div>
       `;
       list.appendChild(item);
+    });
+    list.querySelectorAll('li > a, .asset-results-caption a').forEach((el) => {
+      el.addEventListener('click', (e) => handleOneupClick(e, el));
     });
 
     masonry.textContent = '';
@@ -197,7 +230,7 @@ export default function decorate(block) {
     grid.append(list);
   };
 
-  const showOneUp = async (asset, otherassets) => {
+  showOneUp = async (asset, otherassets) => {
     const createInfo = (panelConfig) => {
       const panel = document.createElement('div');
       panelConfig.forEach((sectionConfig) => {
@@ -237,7 +270,7 @@ export default function decorate(block) {
       </div>
       <div class="header-filename"></div>
       <div class="header-button">
-        <a download="${getDownloadFilename(asset)}" href="${asset.image}" title="${asset.caption}"><button class="primary">Download</button></a>
+        <a download="${getDownloadFilename(asset)}" href="${getDownloadURL(asset)}" title="${asset.caption}"><button class="primary">Download</button></a>
         <button name='close' class="secondary">Done</button>
       </div>
     </div>
@@ -251,10 +284,28 @@ export default function decorate(block) {
       </div>
     </div>`;
     const closeButton = modal.querySelector('.header-button button[name=close]');
-    closeButton.addEventListener('click', () => {
+    function closeOneup() {
       modal.remove();
-      window.history.back();
+      block.style.display = 'block';
+      if (window.history.length <= 1) {
+        const baseURL = new URL(window.location.href);
+        baseURL.search = '';
+        window.location.href = baseURL.href;
+      } else {
+        window.history.back();
+      }
+    }
+    closeButton.addEventListener('click', () => {
+      closeOneup();
     });
+
+    // this needs a bit more refinement
+    // document.body.addEventListener('keypress', (e) => {
+    //   if (e.key === 'Escape') {
+    //     closeOneup();
+    //   }
+    // });
+
     const pictureDiv = modal.querySelector('.asset-results-oneup-picture');
     const moreDiv = modal.querySelector('.asset-results-oneup-more');
 
@@ -305,6 +356,10 @@ export default function decorate(block) {
       });
     });
 
+    pictureDiv.appendChild(createOptimizedPicture(asset.image));
+    block.parentElement.append(modal);
+    block.style.display = 'none';
+
     const similarserviceurl = new URL('https://helix-pages.anywhere.run/helix-services/asset-ingestor@v1');
     similarserviceurl.searchParams.set('url', asset.image);
 
@@ -314,7 +369,8 @@ export default function decorate(block) {
       hits.forEach((otherasset) => {
         const a = document.createElement('a');
         const detailurl = new URL(window.location.href);
-        detailurl.searchParams.set('q', `assetID:${otherasset.assetID}`);
+        detailurl.search = '';
+        detailurl.searchParams.set('assetId', otherasset.assetID);
         a.href = detailurl.href;
         a.appendChild(createOptimizedPicture(otherasset.image));
         moreDiv.appendChild(a);
@@ -323,31 +379,36 @@ export default function decorate(block) {
       // eslint-disable-next-line no-console
       console.log('Could not load similar images:', e);
     }
-
-    pictureDiv.appendChild(createOptimizedPicture(asset.image));
-    block.append(modal);
   };
 
+  // this is an URL state change listener
   const search = () => {
     const myurl = new URL(window.location.href);
-    const query = myurl.searchParams.get('q') || '';
+
     const index = myurl.searchParams.get('index') || 'assets';
-
+    const query = myurl.searchParams.get('q') || '';
     const terms = query.split(' ');
-
-    const filters = [
-      ...(Array.from(myurl.searchParams.entries())
-        .filter(([param]) => param.match(/f:(.*)-minimum/))
-        .map(([param, value]) => `${param.replace(/f:(.*)-minimum/, '$1')}>${value}`)),
-      ...(Array.from(myurl.searchParams.entries())
-        .filter(([param]) => param.match(/f:(.*)-maximum/))
-        .map(([param, value]) => `${param.replace(/f:(.*)-maximum/, '$1')}<${value}`)),
-      ...(terms.filter((term) => term.match(':'))),
-      ...myurl.searchParams.getAll('ff'),
-    ]
-      .map((t) => t.split(':').map((s) => (s.match(/ /) ? `"${s}"` : s)).join(':'))
-      .join(' AND ');
     const words = terms.filter((term) => !term.match(':')).join(' ');
+
+    let filters;
+
+    const assetId = myurl.searchParams.get('assetId');
+    if (assetId) {
+      filters = `assetID:${assetId}`;
+    } else {
+      filters = [
+        ...(Array.from(myurl.searchParams.entries())
+          .filter(([param]) => param.match(/f:(.*)-minimum/))
+          .map(([param, value]) => `${param.replace(/f:(.*)-minimum/, '$1')}>${value}`)),
+        ...(Array.from(myurl.searchParams.entries())
+          .filter(([param]) => param.match(/f:(.*)-maximum/))
+          .map(([param, value]) => `${param.replace(/f:(.*)-maximum/, '$1')}<${value}`)),
+        ...(terms.filter((term) => term.match(':'))),
+        ...myurl.searchParams.getAll('ff'),
+      ]
+        .map((t) => t.split(':').map((s) => (s.match(/ /) ? `"${s}"` : s)).join(':'))
+        .join(' AND ');
+    }
 
     const url = new URL(`https://SWFXY1CU7X-dsn.algolia.net/1/indexes/${index}`);
     url.searchParams.set('query', words);
