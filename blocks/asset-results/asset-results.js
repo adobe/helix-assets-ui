@@ -35,7 +35,7 @@ export default function decorate(block) {
     const detailURL = new URL(window.location.href);
     detailURL.search = '';
     detailURL.searchParams.set('assetId', assetID);
-    window.history.pushState(null, null, detailURL.href);
+    window.history.pushState({ inApp: true }, null, detailURL.href);
 
     showOneUp(searchResults[assetID], []);
   }
@@ -286,14 +286,16 @@ export default function decorate(block) {
     </div>`;
     const closeButton = modal.querySelector('.header-button button[name=close]');
     function closeOneup() {
-      modal.remove();
-      block.style.display = 'block';
-      if (window.history.length <= 1) {
+      if (window.history.state && window.history.state.inApp) {
+        // if we opened within the app, just close modal
+        modal.remove();
+        block.style.display = 'block';
+        window.history.back();
+      } else {
+        // if the detail url was opened directly, we have to reload the page for the search view
         const baseURL = new URL(window.location.href);
         baseURL.search = '';
         window.location.href = baseURL.href;
-      } else {
-        window.history.back();
       }
     }
     closeButton.addEventListener('click', () => {
