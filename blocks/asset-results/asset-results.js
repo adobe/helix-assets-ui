@@ -11,12 +11,42 @@ export default function decorate(block) {
   block.appendChild(list);
 
   const masonry = document.createElement('div');
-  masonry.className = 'asset-results-masonry hidden';
-  block.appendChild(masonry);
-
   const grid = document.createElement('div');
-  grid.className = 'asset-results-grid';
+
+  const resultsView = window.localStorage.getItem('resultsView');
+  if (resultsView === 'masonry') {
+    masonry.className = 'asset-results-masonry';
+    grid.className = 'asset-results-grid hidden';
+  } else {
+    masonry.className = 'asset-results-masonry hidden';
+    grid.className = 'asset-results-grid';
+  }
+
+  block.appendChild(masonry);
   block.append(grid);
+
+  let searchResults = {};
+  let showOneUp;
+
+  function buildOneUpURL(assetID) {
+    const detailURL = new URL(window.location.href);
+    const tenant = detailURL.searchParams.get('tenant');
+    detailURL.search = '';
+    if (tenant) {
+      detailURL.searchParams.set('tenant', tenant);
+    }
+    detailURL.searchParams.set('assetId', assetID);
+    return detailURL.href;
+  }
+
+  function handleOneupClick(e, element) {
+    e.preventDefault();
+
+    const assetID = element.dataset.assetid;
+    window.history.pushState({ inApp: true }, null, buildOneUpURL(assetID));
+
+    showOneUp(searchResults[assetID], []);
+  }
 
   class Masonry {
     constructor(listEl, masonryEl) {
@@ -56,9 +86,15 @@ export default function decorate(block) {
       items.forEach((result) => {
         const img = result.querySelector('img');
         if (img.complete && add) {
+          // const item = result.cloneNode(true);
           const item = document.createElement('div');
           item.className = 'asset-results-masonry-item';
           item.innerHTML = result.innerHTML;
+
+          item.querySelectorAll('a:first-child, .asset-results-caption a').forEach((el) => {
+            el.addEventListener('click', (e) => handleOneupClick(e, el));
+          });
+
           const col = findBestCol();
           col.dataset.height = +col.dataset.height + (img.height / img.width);
           col.append(item);
@@ -117,7 +153,13 @@ export default function decorate(block) {
     return `${file}.${ext}`;
   }
 
+  function getDownloadURL(asset) {
+    // use current origin to make downloads work well in browsers
+    return `${window.location.origin}${new URL(asset.image).pathname}`;
+  }
+
   const showResults = (results) => {
+    searchResults = {};
     const datalist = document.getElementById('query-suggestions');
     if (results.facets && datalist) {
       Object.entries(results.facets)
@@ -130,10 +172,10 @@ export default function decorate(block) {
           });
         });
     }
-    counter.innerHTML = `<div class="asset-results-heading"><img src="/blocks/asset-results/filter.svg">Assets & files (${results.nbHits})</div>
-  <div class="asset-results-view-switcher assets-results-view-masonry"></div>`;
+    counter.innerHTML = `<div class="asset-results-heading"><img src="/blocks/asset-results/filter.svg"><span class="asset-results-heading-text">Assets & Files (${results.nbHits})</span></div>
+  <div class="asset-results-view-switcher ${resultsView === 'masonry' ? 'assets-results-view-grid' : 'assets-results-view-masonry'}">${resultsView === 'masonry' ? 'Grid View' : 'Masonry View'}</div>`;
 
-    const filterbutton = counter.firstElementChild;
+    const filterbutton = counter.querySelector('.asset-results-heading>img');
     filterbutton.addEventListener('click', () => {
       block.parentElement.parentElement.classList.toggle('show-sidebar');
       const url = new URL(window.location.href);
@@ -147,29 +189,36 @@ export default function decorate(block) {
       if (switcher.classList.contains('assets-results-view-grid')) {
         switcher.classList.remove('assets-results-view-grid');
         switcher.classList.add('assets-results-view-masonry');
+        window.localStorage.setItem('resultsView', 'grid');
+        switcher.innerHTML = 'Masonry View';
       } else {
         switcher.classList.add('assets-results-view-grid');
         switcher.classList.remove('assets-results-view-masonry');
+        window.localStorage.setItem('resultsView', 'masonry');
+        switcher.innerHTML = 'Grid View';
       }
       grid.classList.toggle('hidden');
       masonry.classList.toggle('hidden');
     });
 
     results.hits.forEach((hit) => {
+      searchResults[hit.assetID] = hit;
+
       const item = document.createElement('li');
       const topurl = new URL(hit.topurl || hit.sourceURL || hit.image);
       const imageURL = new URL(hit.image);
-      const detailURL = new URL(window.location.href);
-      detailURL.searchParams.set('q', `assetID:${hit.assetID}`);
+
+      const detailURL = buildOneUpURL(hit.assetID);
+
       imageURL.searchParams.set('width', 750);
       const description = hit.alt || hit.caption;
       const picture = createOptimizedPicture(imageURL.href, description, false, [{ width: '750' }]);
       const path = getDisplayPath(topurl.href, hit.sourceType);
 
       item.innerHTML = `
-        <a href="${detailURL.href}">${picture.outerHTML}</a>
+        <a href="${detailURL}" data-assetid="${hit.assetID}">${picture.outerHTML}</a>
         <div class="asset-results-details source-${hit.sourceType}">
-          <p class="asset-results-caption"><a href="${detailURL.href}">${description}</a></p>
+          <p class="asset-results-caption"><a href="${detailURL}" data-assetid="${hit.assetID}">${description}</a></p>
           <p class="asset-results-source"><a href="${topurl.href}">${path}</a></p>
           <p class="asset-results-views">${humanSize(hit.views)}</p>
           <p class="asset-results-dimensions">${hit.height} x ${hit.width}</p>
@@ -177,6 +226,9 @@ export default function decorate(block) {
         </div>
       `;
       list.appendChild(item);
+    });
+    list.querySelectorAll('li > a, .asset-results-caption a').forEach((el) => {
+      el.addEventListener('click', (e) => handleOneupClick(e, el));
     });
 
     masonry.textContent = '';
@@ -186,7 +238,7 @@ export default function decorate(block) {
     grid.append(list);
   };
 
-  const showOneUp = async (asset, otherassets) => {
+  showOneUp = async (asset, otherassets) => {
     const createInfo = (panelConfig) => {
       const panel = document.createElement('div');
       panelConfig.forEach((sectionConfig) => {
@@ -218,17 +270,16 @@ export default function decorate(block) {
     };
     const modal = document.createElement('div');
     modal.classList.add('asset-results-oneup');
+
     modal.innerHTML = `<header>
       <div class="header block" data-block-name="header" data-block-status="loaded">
       <div class="header-brand">
-        <a href="http://localhost:3000/?q=assetID%3A12e16e067b6259f02449f35a35c5b2f7505550167&amp;index=assets"><img src="/styles/adobe.svg"></a>
-        Helix Assets
+        <a href="${window.location.origin}"><img src="${window.tenantLogo}"></a>
+        ${window.tenantTitle}
       </div>
       <div class="header-filename"></div>
       <div class="header-button">
-        <a download="${getDownloadFilename(asset)}" href="${asset.image}" title="${asset.caption}">
-          <button class="primary">Download</button>
-        </a>
+        <a download="${getDownloadFilename(asset)}" href="${getDownloadURL(asset)}" title="${asset.caption}"><button class="primary">Download</button></a>
         <button name='close' class="secondary">Done</button>
       </div>
     </div>
@@ -242,10 +293,34 @@ export default function decorate(block) {
       </div>
     </div>`;
     const closeButton = modal.querySelector('.header-button button[name=close]');
+    function closeOneup() {
+      if (Object.keys(searchResults).length > 0) {
+        // if we opened within the app, just close modal, faster
+        modal.remove();
+        block.style.display = 'block';
+        window.history.back();
+      } else {
+        // if the detail url was opened directly, we have to reload the page for the search view
+        const baseURL = new URL(window.location.href);
+        const tenant = baseURL.searchParams.get('tenant');
+        baseURL.search = '';
+        if (tenant) {
+          baseURL.searchParams.set('tenant', tenant);
+        }
+        window.location.href = baseURL.href;
+      }
+    }
     closeButton.addEventListener('click', () => {
-      modal.remove();
-      window.history.back();
+      closeOneup();
     });
+
+    // this needs a bit more refinement
+    // document.body.addEventListener('keypress', (e) => {
+    //   if (e.key === 'Escape') {
+    //     closeOneup();
+    //   }
+    // });
+
     const pictureDiv = modal.querySelector('.asset-results-oneup-picture');
     const moreDiv = modal.querySelector('.asset-results-oneup-more');
 
@@ -296,17 +371,20 @@ export default function decorate(block) {
       });
     });
 
+    pictureDiv.appendChild(createOptimizedPicture(asset.image));
+    block.parentElement.append(modal);
+    block.style.display = 'none';
+
     const similarserviceurl = new URL('https://helix-pages.anywhere.run/helix-services/asset-ingestor@v1');
     similarserviceurl.searchParams.set('url', asset.image);
+    similarserviceurl.searchParams.set('tenant', window.tenant);
 
     try {
       const res = await fetch(similarserviceurl.href);
       const { hits } = await res.json();
       hits.forEach((otherasset) => {
         const a = document.createElement('a');
-        const detailurl = new URL(window.location.href);
-        detailurl.searchParams.set('q', `assetID:${otherasset.assetID}`);
-        a.href = detailurl.href;
+        a.href = buildOneUpURL(otherasset.assetID);
         a.appendChild(createOptimizedPicture(otherasset.image));
         moreDiv.appendChild(a);
       });
@@ -314,36 +392,45 @@ export default function decorate(block) {
       // eslint-disable-next-line no-console
       console.log('Could not load similar images:', e);
     }
-
-    pictureDiv.appendChild(createOptimizedPicture(asset.image));
-    block.append(modal);
   };
 
+  // this is an URL state change listener
   const search = () => {
+    if (!window.algoliaApiKey) {
+      return;
+    }
+
     const myurl = new URL(window.location.href);
     const query = myurl.searchParams.get('q') || '';
-    const index = myurl.searchParams.get('index') || 'assets';
+    const index = myurl.searchParams.get('index') || `${window.tenant}_assets`;
 
     const terms = query.split(' ');
-
-    const filters = [
-      ...(Array.from(myurl.searchParams.entries())
-        .filter(([param]) => param.match(/f:(.*)-minimum/))
-        .map(([param, value]) => `${param.replace(/f:(.*)-minimum/, '$1')}>${value}`)),
-      ...(Array.from(myurl.searchParams.entries())
-        .filter(([param]) => param.match(/f:(.*)-maximum/))
-        .map(([param, value]) => `${param.replace(/f:(.*)-maximum/, '$1')}<${value}`)),
-      ...(terms.filter((term) => term.match(':'))),
-      ...myurl.searchParams.getAll('ff'),
-    ]
-      .map((t) => t.split(':').map((s) => (s.match(/ /) ? `"${s}"` : s)).join(':'))
-      .join(' AND ');
     const words = terms.filter((term) => !term.match(':')).join(' ');
 
-    const url = new URL(`https://SWFXY1CU7X-dsn.algolia.net/1/indexes/${index}`);
+    let filters;
+
+    const assetId = myurl.searchParams.get('assetId');
+    if (assetId) {
+      filters = `assetID:${assetId}`;
+    } else {
+      filters = [
+        ...(Array.from(myurl.searchParams.entries())
+          .filter(([param]) => param.match(/f:(.*)-minimum/))
+          .map(([param, value]) => `${param.replace(/f:(.*)-minimum/, '$1')}>${value}`)),
+        ...(Array.from(myurl.searchParams.entries())
+          .filter(([param]) => param.match(/f:(.*)-maximum/))
+          .map(([param, value]) => `${param.replace(/f:(.*)-maximum/, '$1')}<${value}`)),
+        ...(terms.filter((term) => term.match(':'))),
+        ...myurl.searchParams.getAll('ff'),
+      ]
+        .map((t) => t.split(':').map((s) => (s.match(/ /) ? `"${s}"` : s)).join(':'))
+        .join(' AND ');
+    }
+
+    const url = new URL(`https://${window.alogliaApplicationId}-dsn.algolia.net/1/indexes/${index}`);
     url.searchParams.set('query', words);
-    url.searchParams.set('x-algolia-api-key', 'bd35440a1d9feb709a052226f1aa70d8');
-    url.searchParams.set('x-algolia-application-id', 'SWFXY1CU7X');
+    url.searchParams.set('x-algolia-api-key', window.algoliaApiKey);
+    url.searchParams.set('x-algolia-application-id', window.alogliaApplicationId);
     // only one objectID per assetID
     // (search for "a person wearing sunglasses" for test)
     url.searchParams.set('distinct', !filters.match(/assetID:/));

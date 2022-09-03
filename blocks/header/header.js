@@ -1,7 +1,16 @@
 export default async function decorate(block) {
-  const selfURL = new URL(window.location.href);
-  selfURL.searchParams.set('index', selfURL.searchParams.get('index') === 'assets' ? 'assets-cai' : 'assets');
-  block.innerHTML = `<div class="header-brand"><a href="${selfURL.href}"><img src="/styles/adobe.svg"></a>Assets Across Adobe</div><div class="header-input"><span><input placeholder="Landscape Type to search..."></span></div><div class="header-button"></div>`;
+  // allow switching between tineye-based index and CAI index
+  // const u = new URL(window.location.href);
+  // u.searchParams.set('index', u.searchParams.get('index') === 'assets' ? 'assets-cai':'assets');
+
+  block.innerHTML = `<div class="header-brand">
+    <a href="${window.location.origin}"><img src="${window.tenantLogo}"></a>
+    ${window.tenantTitle}
+  </div>
+  <div class="header-input">
+    <span><input placeholder="Landscape Type to search..."></span>
+  </div>
+  <div class="header-button"></div>`;
 
   const textfield = block.querySelector('input');
 
@@ -35,7 +44,7 @@ export default async function decorate(block) {
     canvas.remove();
     const data = new URLSearchParams();
     data.set('upload', upload);
-    const res = await fetch('https://helix-pages.anywhere.run/helix-services/asset-ingestor@v1', {
+    const res = await fetch(`https://helix-pages.anywhere.run/helix-services/asset-ingestor@v1?index=${window.tenant}_assets`, {
       method: 'POST',
       headers: {
         'content-type': 'application/x-www-form-urlencoded; charset=utf-8',
@@ -51,30 +60,39 @@ export default async function decorate(block) {
     }
   });
 
+  let delayTimer;
   // update the URL when the input changes
   textfield.addEventListener('input', () => {
-    const myurl = new URL(window.location.href);
-    myurl.searchParams.set('q', textfield.value);
-    window.changeURLState({ query: textfield.value }, myurl.href);
+    if (!window.algoliaApiKey) {
+      return;
+    }
+    clearTimeout(delayTimer);
+    delayTimer = setTimeout(() => {
+      // /////////////////////////////////////////////////////////////
+      const myurl = new URL(window.location.href);
+      myurl.searchParams.set('q', textfield.value);
+      window.changeURLState({ query: textfield.value }, myurl.href);
 
-    const query = myurl.searchParams.get('q');
+      const query = myurl.searchParams.get('q');
 
-    const url = new URL('https://SWFXY1CU7X-dsn.algolia.net/1/indexes/assets_query_suggestions');
-    url.searchParams.set('query', query);
-    url.searchParams.set('x-algolia-api-key', 'bd35440a1d9feb709a052226f1aa70d8');
-    url.searchParams.set('x-algolia-application-id', 'SWFXY1CU7X');
+      const url = new URL(`https://${window.alogliaApplicationId}-dsn.algolia.net/1/indexes/${window.tenant}_assets_query_suggestions`);
+      url.searchParams.set('query', query);
+      url.searchParams.set('x-algolia-api-key', window.algoliaApiKey);
+      url.searchParams.set('x-algolia-application-id', window.alogliaApplicationId);
 
-    fetch(url.href).then(async (res) => {
-      const { hits } = await res.json();
-      if (hits.length) {
-        datalist.innerHTML = '';
-      }
-      hits.forEach((hit) => {
-        const option = document.createElement('option');
-        option.innerHTML = hit.query;
-        datalist.append(option);
+      fetch(url.href).then(async (res) => {
+        const { hits } = await res.json();
+        if (hits.length) {
+          datalist.innerHTML = '';
+        }
+        hits.forEach((hit) => {
+          const option = document.createElement('option');
+          option.innerHTML = hit.query;
+          datalist.append(option);
+        });
       });
-    });
+      // /////////////////////////////////////////////////////////////
+    }, 500);
   });
   textfield.after(datalist);
 }
