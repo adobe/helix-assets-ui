@@ -94,6 +94,10 @@ main .asset-results-grid .asset-results-views, main .asset-results-grid .asset-r
   display: none;
 }
 
+main .asset-results-masonry .asset-results-source, main .asset-results-masonry .asset-results-views {
+  display: none;
+}
+
 main .asset-results-masonry-item p {
   word-break: break-all;
   font-size: 0.8rem;
@@ -165,15 +169,21 @@ main .asset-results-masonry-item {
 main p.asset-results-caption {
   font-weight: bold;
   grid-area: caption;
-  margin-bottom: 10px;
-}
-
-main .asset-results-caption a {
-  color: white;
 }
 
 main .asset-results-source {
   grid-area: source;
+}
+
+main .asset-results-masonry-item p.asset-results-caption {
+  margin-bottom: 10px;
+}
+
+main .asset-results-masonry-item .asset-results-caption a {
+  color: white;
+}
+
+main .asset-results-masonry-item .asset-results-source {
   overflow: hidden;
   max-height: 1.5em;
 }

@@ -219,8 +219,8 @@ export default function decorate(block) {
         <a href="${detailURL}" data-assetid="${hit.assetID}">${picture.outerHTML}</a>
         <div class="asset-results-details source-${hit.sourceType}">
           <p class="asset-results-caption"><a href="${detailURL}" data-assetid="${hit.assetID}">${description}</a></p>
-          <!-- <p class="asset-results-source"><a href="${topurl.href}">${path}</a></p> -->
-          <!-- <p class="asset-results-views">${humanSize(hit.views)}</p> -->
+          <p class="asset-results-source"><a href="${topurl.href}">${path}</a></p>
+          <p class="asset-results-views">${humanSize(hit.views)}</p>
           <p class="asset-results-dimensions">${hit.height} x ${hit.width}</p>
           <p class="asset-results-tags"><span>${(hit.tags || []).join('</span> <span>')}</span></p>
         </div>
