@@ -28,14 +28,22 @@ export default function decorate(block) {
   let searchResults = {};
   let showOneUp;
 
+  function buildOneUpURL(assetID) {
+    const detailURL = new URL(window.location.href);
+    const tenant = detailURL.searchParams.get('tenant');
+    detailURL.search = '';
+    if (tenant) {
+      detailURL.searchParams.set('tenant', tenant);
+    }
+    detailURL.searchParams.set('assetId', assetID);
+    return detailURL.href;
+  }
+
   function handleOneupClick(e, element) {
     e.preventDefault();
 
     const assetID = element.dataset.assetid;
-    const detailURL = new URL(window.location.href);
-    detailURL.search = '';
-    detailURL.searchParams.set('assetId', assetID);
-    window.history.pushState({ inApp: true }, null, detailURL.href);
+    window.history.pushState({ inApp: true }, null, buildOneUpURL(assetID));
 
     showOneUp(searchResults[assetID], []);
   }
@@ -199,9 +207,8 @@ export default function decorate(block) {
       const item = document.createElement('li');
       const topurl = new URL(hit.topurl || hit.sourceURL || hit.image);
       const imageURL = new URL(hit.image);
-      const detailURL = new URL(window.location.href);
-      detailURL.search = '';
-      detailURL.searchParams.set('assetId', hit.assetID);
+
+      const detailURL = buildOneUpURL(hit.assetID);
 
       imageURL.searchParams.set('width', 750);
       const description = hit.alt || hit.caption;
@@ -209,9 +216,9 @@ export default function decorate(block) {
       const path = getDisplayPath(topurl.href, hit.sourceType);
 
       item.innerHTML = `
-        <a href="${detailURL.href}" data-assetid="${hit.assetID}">${picture.outerHTML}</a>
+        <a href="${detailURL}" data-assetid="${hit.assetID}">${picture.outerHTML}</a>
         <div class="asset-results-details source-${hit.sourceType}">
-          <p class="asset-results-caption"><a href="${detailURL.href}" data-assetid="${hit.assetID}">${description}</a></p>
+          <p class="asset-results-caption"><a href="${detailURL}" data-assetid="${hit.assetID}">${description}</a></p>
           <!-- <p class="asset-results-source"><a href="${topurl.href}">${path}</a></p> -->
           <!-- <p class="asset-results-views">${humanSize(hit.views)}</p> -->
           <p class="asset-results-dimensions">${hit.height} x ${hit.width}</p>
@@ -287,15 +294,19 @@ export default function decorate(block) {
     </div>`;
     const closeButton = modal.querySelector('.header-button button[name=close]');
     function closeOneup() {
-      if (window.history.state && window.history.state.inApp) {
-        // if we opened within the app, just close modal
+      if (Object.keys(searchResults).length > 0) {
+        // if we opened within the app, just close modal, faster
         modal.remove();
         block.style.display = 'block';
         window.history.back();
       } else {
         // if the detail url was opened directly, we have to reload the page for the search view
         const baseURL = new URL(window.location.href);
+        const tenant = baseURL.searchParams.get('tenant');
         baseURL.search = '';
+        if (tenant) {
+          baseURL.searchParams.set('tenant', tenant);
+        }
         window.location.href = baseURL.href;
       }
     }
@@ -373,10 +384,7 @@ export default function decorate(block) {
       const { hits } = await res.json();
       hits.forEach((otherasset) => {
         const a = document.createElement('a');
-        const detailurl = new URL(window.location.href);
-        detailurl.search = '';
-        detailurl.searchParams.set('assetId', otherasset.assetID);
-        a.href = detailurl.href;
+        a.href = buildOneUpURL(otherasset.assetID);
         a.appendChild(createOptimizedPicture(otherasset.image));
         moreDiv.appendChild(a);
       });
