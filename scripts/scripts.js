@@ -669,7 +669,7 @@ async function login() {
     }
   }
 
-  window.tenantTitle = 'Assets across Adobe';
+  window.tenantTitle = 'Assets Across Adobe';
   window.tenantLogo = '/styles/adobe.svg';
 
   // api key (password)

@@ -60,34 +60,39 @@ export default async function decorate(block) {
     }
   });
 
+  let delayTimer;
   // update the URL when the input changes
   textfield.addEventListener('input', () => {
     if (!window.algoliaApiKey) {
       return;
     }
+    clearTimeout(delayTimer);
+    delayTimer = setTimeout(() => {
+      // /////////////////////////////////////////////////////////////
+      const myurl = new URL(window.location.href);
+      myurl.searchParams.set('q', textfield.value);
+      window.changeURLState({ query: textfield.value }, myurl.href);
 
-    const myurl = new URL(window.location.href);
-    myurl.searchParams.set('q', textfield.value);
-    window.changeURLState({ query: textfield.value }, myurl.href);
+      const query = myurl.searchParams.get('q');
 
-    const query = myurl.searchParams.get('q');
+      const url = new URL(`https://${window.alogliaApplicationId}-dsn.algolia.net/1/indexes/${window.tenant}_assets_query_suggestions`);
+      url.searchParams.set('query', query);
+      url.searchParams.set('x-algolia-api-key', window.algoliaApiKey);
+      url.searchParams.set('x-algolia-application-id', window.alogliaApplicationId);
 
-    const url = new URL(`https://${window.alogliaApplicationId}-dsn.algolia.net/1/indexes/${window.tenant}_assets_query_suggestions`);
-    url.searchParams.set('query', query);
-    url.searchParams.set('x-algolia-api-key', window.algoliaApiKey);
-    url.searchParams.set('x-algolia-application-id', window.alogliaApplicationId);
-
-    fetch(url.href).then(async (res) => {
-      const { hits } = await res.json();
-      if (hits.length) {
-        datalist.innerHTML = '';
-      }
-      hits.forEach((hit) => {
-        const option = document.createElement('option');
-        option.innerHTML = hit.query;
-        datalist.append(option);
+      fetch(url.href).then(async (res) => {
+        const { hits } = await res.json();
+        if (hits.length) {
+          datalist.innerHTML = '';
+        }
+        hits.forEach((hit) => {
+          const option = document.createElement('option');
+          option.innerHTML = hit.query;
+          datalist.append(option);
+        });
       });
-    });
+      // /////////////////////////////////////////////////////////////
+    }, 500);
   });
   textfield.after(datalist);
 }
