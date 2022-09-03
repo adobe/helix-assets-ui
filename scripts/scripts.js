@@ -636,6 +636,76 @@ function buildFilterBlock(main) {
   wrapperdiv.prepend(buildBlock('filters', { elems: [filterdiv] }));
 }
 
+async function testAlgoliaConnection(tenant, apiKey) {
+  const url = new URL(`https://${window.alogliaApplicationId}-dsn.algolia.net/1/indexes/${tenant}_assets`);
+  url.searchParams.set('x-algolia-api-key', apiKey);
+  url.searchParams.set('x-algolia-application-id', window.alogliaApplicationId);
+  url.searchParams.set('query', '');
+  url.searchParams.set('hitsPerPage', 0);
+
+  const response = await fetch(url.href);
+  return response.status === 200;
+}
+
+async function login() {
+  window.alogliaApplicationId = 'SWFXY1CU7X';
+
+  // tenant
+
+  const domain = window.location.hostname;
+  const m = domain.match(/(.*)\.hlx\.media/);
+  if (m) {
+    // pilot customer domains
+    // eslint-disable-next-line prefer-destructuring
+    window.tenant = m[1];
+  } else {
+    // developer override
+    const tenant = new URL(window.location.href).searchParams.get('tenant');
+    if (tenant) {
+      window.tenant = tenant;
+    } else {
+      // fallback - original site
+      window.tenant = 'adobe';
+    }
+  }
+
+  window.tenantTitle = 'Assets Across Adobe';
+  window.tenantLogo = '/styles/adobe.svg';
+
+  // api key (password)
+
+  if (window.tenant === 'adobe') {
+    window.algoliaApiKey = 'a3a03f2ea4a053b7ea033ab3abf96792';
+    return;
+  }
+
+  const savedKey = window.localStorage.getItem('algoliaApiKey');
+  if (savedKey) {
+    window.algoliaApiKey = savedKey;
+    return;
+  }
+
+  let msg = 'Welcome!';
+
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    // eslint-disable-next-line no-alert
+    const apiKey = prompt(`${msg}\n\nPassword for ${window.tenant}:`);
+    if (apiKey) {
+      // eslint-disable-next-line no-await-in-loop
+      if (await testAlgoliaConnection(window.tenant, apiKey)) {
+        window.algoliaApiKey = apiKey;
+        window.localStorage.setItem('algoliaApiKey', apiKey);
+        return;
+      }
+      msg = 'Sorry, the password is incorrect, please try again.';
+    } else {
+      document.body.innerHTML = '<div class="logout">You are not logged in. Please refresh page to login again.</div>';
+      return;
+    }
+  }
+}
+
 function loadHeader(header) {
   const headerBlock = buildBlock('header', '');
   header.append(headerBlock);
@@ -698,6 +768,8 @@ async function loadEager(doc) {
  * loads everything that doesn't need to be delayed.
  */
 async function loadLazy(doc) {
+  await login();
+
   const main = doc.querySelector('main');
   await loadBlocks(main);
 
