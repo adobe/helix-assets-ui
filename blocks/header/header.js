@@ -44,10 +44,12 @@ export default async function decorate(block) {
     canvas.remove();
     const data = new URLSearchParams();
     data.set('upload', upload);
-    const res = await fetch(`https://helix-pages.anywhere.run/helix-services/asset-ingestor@v1?index=${window.tenant}_assets`, {
+    // POST to search for similar images for the image in data url format
+    const res = await fetch(`https://helix-pages.anywhere.run/helix-services/asset-ingestor@v2?customer=${window.tenant}`, {
       method: 'POST',
       headers: {
         'content-type': 'application/x-www-form-urlencoded; charset=utf-8',
+        'x-api-key': window.algoliaApiKey,
       },
       body: data.toString(),
     });

@@ -375,12 +375,17 @@ export default function decorate(block) {
     block.parentElement.append(modal);
     block.style.display = 'none';
 
-    const similarserviceurl = new URL('https://helix-pages.anywhere.run/helix-services/asset-ingestor@v1');
+    // GET similar images by url
+    const similarserviceurl = new URL('https://helix-pages.anywhere.run/helix-services/asset-ingestor@v2');
     similarserviceurl.searchParams.set('url', asset.image);
-    similarserviceurl.searchParams.set('tenant', window.tenant);
+    similarserviceurl.searchParams.set('customer', window.tenant);
 
     try {
-      const res = await fetch(similarserviceurl.href);
+      const res = await fetch(similarserviceurl.href, {
+        headers: {
+          'x-api-key': window.algoliaApiKey,
+        },
+      });
       const { hits } = await res.json();
       hits.forEach((otherasset) => {
         const a = document.createElement('a');
