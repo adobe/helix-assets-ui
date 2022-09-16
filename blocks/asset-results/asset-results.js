@@ -387,12 +387,14 @@ export default function decorate(block) {
         },
       });
       const { hits } = await res.json();
-      hits.forEach((otherasset) => {
-        const a = document.createElement('a');
-        a.href = buildOneUpURL(otherasset.assetID);
-        a.appendChild(createOptimizedPicture(otherasset.image));
-        moreDiv.appendChild(a);
-      });
+      // don't list the asset itself in the list of similar images
+      hits.filter((hit) => hit.assetID !== asset.assetID)
+        .forEach((otherasset) => {
+          const a = document.createElement('a');
+          a.href = buildOneUpURL(otherasset.assetID);
+          a.appendChild(createOptimizedPicture(otherasset.image));
+          moreDiv.appendChild(a);
+        });
     } catch (e) {
       // eslint-disable-next-line no-console
       console.log('Could not load similar images:', e);
