@@ -669,8 +669,8 @@ async function login() {
     }
   }
 
-  window.tenantTitle = 'Assets Across Adobe';
-  window.tenantLogo = '/styles/adobe.svg';
+  window.tenantTitle = 'Assets Across Best Buy';
+  window.tenantLogo = '/styles/bestbuy.svg';
 
   // api key (password)
 
