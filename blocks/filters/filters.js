@@ -62,7 +62,7 @@ export default function decorate(block) {
       const parentdiv = document.createElement('div');
       const facetdiv = document.createElement('div');
       facetdiv.classList.add('facet');
-      const facetTitle = displayNameMap[facet];
+      const facetTitle = displayNameMap[facet] || facet;
       parentdiv.innerHTML = `<h3>${facetTitle}</h3>`;
       parentdiv.append(facetdiv);
       // List 'non website' selections
