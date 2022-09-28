@@ -770,13 +770,13 @@ async function loadEager(doc) {
 async function loadLazy(doc) {
   await login();
 
-  const main = doc.querySelector('main');
-  await loadBlocks(main);
+  // const main = doc.querySelector('main');
+  // await loadBlocks(main);
 
-  loadHeader(doc.querySelector('header'));
-  loadFooter(doc.querySelector('footer'));
+  // loadHeader(doc.querySelector('header'));
+  // loadFooter(doc.querySelector('footer'));
 
-  loadCSS(`${window.hlx.codeBasePath}/styles/lazy-styles.css`);
+  // loadCSS(`${window.hlx.codeBasePath}/styles/lazy-styles.css`);
   addFavIcon(`${window.hlx.codeBasePath}/styles/favicon.svg`);
 }
 
