@@ -1,4 +1,4 @@
-const ignoredFacets = ['assetID', 'tags', 'multiple', 'background', 'categories', 'foreground'];
+const ignoredFacets = ['assetID', 'tags', 'multiple', 'background', 'categories', 'foreground', 'pdqHash'];
 const allowSourceDomains = ['www.adobe.com', 'blog.adobe.com'];
 const ignoreSource = ['website', 'rum'];
 const displayNameMap = {
@@ -17,6 +17,7 @@ export default function decorate(block) {
     if (url.hash === '#sidebar') {
       block.parentElement.parentElement.classList.add('show-sidebar');
     }
+    const allFacets = url.searchParams.get('allfacets');
 
     block.innerHTML = '';
 
@@ -27,7 +28,7 @@ export default function decorate(block) {
     const websiteSources = {};
 
     Object.keys(facets)
-      .filter((facet) => !ignoredFacets.includes(facet))
+      .filter((facet) => allFacets || !ignoredFacets.includes(facet))
       .forEach((facet) => {
         const facetEntries = {};
         // List 'non website' selections
