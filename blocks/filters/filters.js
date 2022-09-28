@@ -1,4 +1,6 @@
-const ignoredFacets = ['assetID', 'tags', 'multiple', 'background', 'categories', 'foreground'];
+/* eslint-disable max-len */
+
+const ignoredFacets = ['assetID', 'tags', 'multiple', 'background', 'categories', 'foreground', 'pdqHash'];
 const allowSourceDomains = ['www.adobe.com', 'blog.adobe.com'];
 const ignoreSource = ['website', 'rum'];
 const displayNameMap = {
@@ -11,12 +13,20 @@ const displayNameMap = {
   aspectratio: 'Orientation',
 };
 
+function truncate(str, n) {
+  if (str.length > n) {
+    return `${str.substr(0, n - 1)}&hellip;`;
+  }
+  return str;
+}
+
 export default function decorate(block) {
   window.appState.on('facets', (_, facets) => {
     const url = new URL(window.location.href);
     if (url.hash === '#sidebar') {
       block.parentElement.parentElement.classList.add('show-sidebar');
     }
+    const allFacets = url.searchParams.get('allfacets');
 
     block.innerHTML = '';
 
@@ -27,7 +37,7 @@ export default function decorate(block) {
     const websiteSources = {};
 
     Object.keys(facets)
-      .filter((facet) => !ignoredFacets.includes(facet))
+      .filter((facet) => allFacets || !ignoredFacets.includes(facet))
       .forEach((facet) => {
         const facetEntries = {};
         // List 'non website' selections
@@ -62,7 +72,7 @@ export default function decorate(block) {
       const parentdiv = document.createElement('div');
       const facetdiv = document.createElement('div');
       facetdiv.classList.add('facet');
-      const facetTitle = displayNameMap[facet];
+      const facetTitle = displayNameMap[facet] || facet;
       parentdiv.innerHTML = `<h3>${facetTitle}</h3>`;
       parentdiv.append(facetdiv);
       // List 'non website' selections
@@ -74,7 +84,8 @@ export default function decorate(block) {
         checkbox.id = `facet-${facet}-${value}`;
         checkbox.checked = !!allfacets.filter((f) => f === `${facet}:${value}`).length;
         const label = document.createElement('label');
-        label.innerHTML = `<span class="value">${displayNameMap[value] !== undefined ? displayNameMap[value] : value}</span><span class="count">${assetCount}</span>`;
+        const valueText = truncate(displayNameMap[value] ? displayNameMap[value] : value, 25);
+        label.innerHTML = `<span class="value">${valueText}</span> <span class="count">${assetCount}</span>`;
         label.setAttribute('for', checkbox.id);
         facetdiv.append(checkbox);
         facetdiv.append(label);
@@ -103,7 +114,8 @@ export default function decorate(block) {
             checkboxx.id = `facet-${facetName}-${valuex}`;
             checkboxx.checked = !!allfacets.filter((f) => f === `${facetName}:${valuex}`).length;
             const labelx = document.createElement('label');
-            labelx.innerHTML = `<span class="value">${displayNameMap[valuex] !== undefined ? displayNameMap[valuex] : valuex}</span><span class="count">${countx}</span>`;
+            const valuexText = truncate(displayNameMap[valuex] ? displayNameMap[valuex] : valuex, 25);
+            labelx.innerHTML = `<span class="value">${valuexText}</span> <span class="count">${countx}</span>`;
             labelx.setAttribute('for', checkboxx.id);
             domainFacetdiv.append(checkboxx);
             domainFacetdiv.append(labelx);
