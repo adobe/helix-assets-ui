@@ -671,6 +671,7 @@ async function login() {
 
   window.tenantTitle = 'Assets Across Adobe';
   window.tenantLogo = '/styles/adobe.svg';
+  window.tenantDomains = ['www.adobe.com', 'blog.adobe.com'];
 
   // api key (password)
 
