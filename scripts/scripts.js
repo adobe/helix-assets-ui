@@ -669,8 +669,8 @@ async function login() {
     }
   }
 
-  window.tenantTitle = 'Assets Across Adobe';
-  window.tenantLogo = '/styles/adobe.svg';
+  window.tenantTitle = 'Assets Across Testcustomer';
+  window.tenantLogo = '/styles/rainbow-logo.png';
   window.tenantDomains = ['www.adobe.com', 'blog.adobe.com'];
 
   // api key (password)
