@@ -1,7 +1,6 @@
 /* eslint-disable max-len */
 
 const ignoredFacets = ['assetID', 'tags', 'multiple', 'background', 'categories', 'foreground', 'pdqHash'];
-const allowSourceDomains = ['www.adobe.com', 'blog.adobe.com'];
 const ignoreSource = ['website', 'rum'];
 const displayNameMap = {
   website: 'Website',
@@ -54,14 +53,14 @@ export default function decorate(block) {
 
         if (facet === 'sourceDomain') {
           Object.entries(facets[facet]).forEach(([value, count]) => {
-            if (allowSourceDomains.includes(value)) {
+            if (window.tenantDomains.includes(value)) {
               websiteSources[value] = count;
               websiteCounts += count;
             }
           });
         }
       });
-    if (facetGroups.sourceType !== undefined && websiteCounts > 0) {
+    if (facetGroups.sourceType && websiteCounts > 0) {
       facetGroups.sourceType.website = {
         count: websiteCounts,
         domains: websiteSources,
