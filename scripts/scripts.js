@@ -671,7 +671,7 @@ async function login() {
 
   window.tenantTitle = 'Assets Across Best Buy';
   window.tenantLogo = '/styles/bestbuy.svg';
-  window.tenantDomains = ['www.adobe.com', 'blog.adobe.com'];
+  window.tenantDomains = ['www.bestbuy.com'];
 
   // api key (password)
 
