@@ -17,8 +17,8 @@ These require a password (read only algolia api token).
 
 - Adobe https://adobe.hlx.media (public, no login)
 - Testcustomer https://testcustomer.hlx.media
-- BestBuy TBD
-- Disney TBD
+- BestBuy https://bestbuy.hlx.media
+- Disney https://disney.hlx.media
 
 ### How to add a new customer
 
