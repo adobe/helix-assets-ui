@@ -777,8 +777,6 @@ async function loadLazy(doc) {
   // loadFooter(doc.querySelector('footer'));
 
   // loadCSS(`${window.hlx.codeBasePath}/styles/lazy-styles.css`);
-  loadCSS(`${window.hlx.codeBasePath}/assets/index.0511459f.css`);
-  loadCSS(`${window.hlx.codeBasePath}/assets/spectrum.b58a4ef7.css`);
   
   addFavIcon(`${window.hlx.codeBasePath}/styles/favicon.svg`);
 }
