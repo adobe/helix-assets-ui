@@ -376,7 +376,11 @@ export default function decorate(block) {
 
     // GET similar images by url
     const similarserviceurl = new URL('https://helix-pages.anywhere.run/helix-services/asset-ingestor@v2');
-    similarserviceurl.searchParams.set('url', asset.image);
+
+    const imageUrl = new URL(asset.image);
+    imageUrl.hostname = imageUrl.hostname.replace('.hlx3.page', '.hlx.page');
+
+    similarserviceurl.searchParams.set('url', imageUrl.href);
     similarserviceurl.searchParams.set('customer', window.tenant);
 
     try {
