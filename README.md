@@ -49,13 +49,13 @@ These require a password (read only algolia api token).
 
 ## Development Environments
 
-- Main: https://main--helix-assets-ui--adobe.hlx3.page
-- Branch: `https://<branch>--helix-assets-ui--adobe.hlx3.page`
+- Main: https://main--helix-assets-ui--adobe.hlx.page
+- Branch: `https://<branch>--helix-assets-ui--adobe.hlx.page`
 
 To select a custom tenant set the `tenant` query parameter:
 
 ```
-https://main--helix-assets-ui--adobe.hlx3.page/?tenant=<customer>
+https://main--helix-assets-ui--adobe.hlx.page/?tenant=<customer>
 ```
 
 To logout, go to Browser Developer Console > Storage or Application > Local Storage and find & delete the `algoliaApiKey` key. Then reload the page.
