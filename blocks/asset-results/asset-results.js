@@ -210,7 +210,6 @@ export default function decorate(block) {
 
       const detailURL = buildOneUpURL(hit.assetID);
 
-      imageURL.searchParams.set('width', 750);
       const description = hit.alt || hit.caption;
       const picture = createOptimizedPicture(imageURL.href, description, false, [{ width: '750' }]);
       const path = getDisplayPath(topurl.href, hit.sourceType);
