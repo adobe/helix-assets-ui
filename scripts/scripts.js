@@ -398,28 +398,50 @@ export function createOptimizedPicture(src, alt = '', eager = false, breakpoints
   const { pathname } = url;
   const ext = pathname.substring(pathname.lastIndexOf('.') + 1);
 
+  // we need to use the current domain for same-origin delivery of images
+  //
+  // however some image urls in the algolia index come from a different domain (bug on ingestion)
+  // and these must be kept as is, for example:
+  //   https://blog.adobe.com/en/publish/2018/10/15/media_1fff44b9c2143f50fc7567e119e6e68f31fb8b727.png
+  //
+  // we detect this by a "longer" path
+  if (url.pathname.split('/').length <= 2) {
+    url.protocol = window.location.protocol;
+    url.host = window.location.host;
+  }
+
+  url.hash = '';
+  url.search = '';
+  url.searchParams.set('optimize', 'medium');
+
   // webp
   breakpoints.forEach((br) => {
+    url.searchParams.set('format', 'webply');
+    url.searchParams.set('width', br.width);
+
     const source = document.createElement('source');
     if (br.media) source.setAttribute('media', br.media);
     source.setAttribute('type', 'image/webp');
-    source.setAttribute('srcset', `https://${url.hostname}${pathname}?width=${br.width}&format=webply&optimize=medium`);
+    source.setAttribute('srcset', url.href);
     picture.appendChild(source);
   });
 
   // fallback
   breakpoints.forEach((br, i) => {
+    url.searchParams.set('format', ext);
+    url.searchParams.set('width', br.width);
+
     if (i < breakpoints.length - 1) {
       const source = document.createElement('source');
       if (br.media) source.setAttribute('media', br.media);
-      source.setAttribute('srcset', `https://${url.hostname}${pathname}?width=${br.width}&format=${ext}&optimize=medium`);
+      source.setAttribute('srcset', url.href);
       picture.appendChild(source);
     } else {
       const img = document.createElement('img');
       img.setAttribute('loading', eager ? 'eager' : 'lazy');
       img.setAttribute('alt', alt);
       picture.appendChild(img);
-      img.setAttribute('src', `https://${url.hostname}${pathname}?width=${br.width}&format=${ext}&optimize=medium`);
+      img.setAttribute('src', url.href);
     }
   });
 
@@ -671,6 +693,7 @@ async function login() {
 
   window.tenantTitle = 'Assets Across Adobe';
   window.tenantLogo = '/styles/adobe.svg';
+  window.tenantDomains = ['www.adobe.com', 'blog.adobe.com'];
 
   // api key (password)
 
