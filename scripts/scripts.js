@@ -800,6 +800,8 @@ async function loadLazy(doc) {
   // loadFooter(doc.querySelector('footer'));
 
   // loadCSS(`${window.hlx.codeBasePath}/styles/lazy-styles.css`);
+  // load typekit adobe clean font
+  loadCSS(`https://use.typekit.net/dsd0vdr.css`);
   
   addFavIcon(`${window.hlx.codeBasePath}/styles/favicon.svg`);
 }
