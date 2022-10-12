@@ -142,6 +142,7 @@ export function loadCSS(href, callback) {
   }
 }
 
+// eslint-disable-next-line no-unused-vars
 function unloadCSS(href) {
   const link = document.querySelector(`head > link[href="${href}"]`);
   if (link) {
@@ -797,13 +798,11 @@ function loadSynchronous() {
     // classic helix-based UI
 
     loadCSS(`${window.hlx.codeBasePath}/styles/styles.css`);
-    // unloadCSS(`${window.hlx.codeBasePath}/assets/index.afa506da.css`);
 
   } else {
     // react UI
 
     loadCSS(`${window.hlx.codeBasePath}/assets/index.afa506da.css`);
-    // unloadCSS(`${window.hlx.codeBasePath}/styles/styles.css`);
 
     // load typekit adobe clean font
     loadCSS('https://use.typekit.net/dsd0vdr.css');
