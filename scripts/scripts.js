@@ -565,8 +565,6 @@ async function waitForLCP() {
  * Decorates the page.
  */
 async function loadPage(doc) {
-  console.time('page');
-  console.log('loadPage');
   // eslint-disable-next-line no-use-before-define
   await loadEager(doc);
   // eslint-disable-next-line no-use-before-define
@@ -789,8 +787,6 @@ export function decorateMain(main) {
  * loads everything needed to get to LCP.
  */
 async function loadEager(doc) {
-  console.log('loadEager');
-  console.timeLog('page');
   const main = doc.querySelector('main');
   if (main) {
     decorateMain(main);
@@ -809,20 +805,19 @@ function showHelixUI() {
   return window.localStorage.getItem('ui') === 'helix';
 }
 
+if (showHelixUI()) {
+  window.ui = 'helix';
+}
+
 /**
  * loads everything that doesn't need to be delayed.
  */
 async function loadLazy(doc) {
-  console.log('loadLazy');
-  console.timeLog('page');
   await login();
 
-  if (showHelixUI()) {
-    console.log('helix ui');
-    console.timeLog('page');
+  if (window.ui === 'helix') {
     // classic helix-based UI
     unloadCSS(`${window.hlx.codeBasePath}/assets/index.afa506da.css`);
-    loadCSS(`${window.hlx.codeBasePath}/styles/styles.css`);
 
     const main = doc.querySelector('main');
     await loadBlocks(main);
@@ -832,13 +827,8 @@ async function loadLazy(doc) {
 
     loadCSS(`${window.hlx.codeBasePath}/styles/lazy-styles.css`);
   } else {
-    console.log('react UI');
-    console.timeLog('page');
     // react UI
-    // unloadCSS(`${window.hlx.codeBasePath}/styles/styles.css`);
-
-    // await import('../assets/index.9e150c52.js');
-    // loadCSS('/assets/index.afa506da.css');
+    unloadCSS(`${window.hlx.codeBasePath}/styles/styles.css`);
 
     // load typekit adobe clean font
     loadCSS('https://use.typekit.net/dsd0vdr.css');
