@@ -821,7 +821,8 @@ async function loadLazy(doc) {
     console.log('helix ui');
     console.timeLog('page');
     // classic helix-based UI
-    // loadCSS(`${window.hlx.codeBasePath}/styles/styles.css`);
+    unloadCSS(`${window.hlx.codeBasePath}/assets/index.afa506da.css`);
+    loadCSS(`${window.hlx.codeBasePath}/styles/styles.css`);
 
     const main = doc.querySelector('main');
     await loadBlocks(main);
@@ -834,10 +835,10 @@ async function loadLazy(doc) {
     console.log('react UI');
     console.timeLog('page');
     // react UI
-    unloadCSS(`${window.hlx.codeBasePath}/styles/styles.css`);
+    // unloadCSS(`${window.hlx.codeBasePath}/styles/styles.css`);
 
-    await import('../assets/index.9e150c52.js');
-    loadCSS('/assets/index.afa506da.css');
+    // await import('../assets/index.9e150c52.js');
+    // loadCSS('/assets/index.afa506da.css');
 
     // load typekit adobe clean font
     loadCSS('https://use.typekit.net/dsd0vdr.css');
