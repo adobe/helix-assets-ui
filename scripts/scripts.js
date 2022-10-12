@@ -141,6 +141,13 @@ export function loadCSS(href, callback) {
   }
 }
 
+function unloadCSS(href) {
+  const link = document.querySelector(`head > link[href="${href}"]`);
+  if (link) {
+    link.remove();
+  }
+}
+
 /**
  * Retrieves the content of a metadata tag.
  * @param {string} name The metadata name (or property)
@@ -558,6 +565,8 @@ async function waitForLCP() {
  * Decorates the page.
  */
 async function loadPage(doc) {
+  console.time('page');
+  console.log('loadPage');
   // eslint-disable-next-line no-use-before-define
   await loadEager(doc);
   // eslint-disable-next-line no-use-before-define
@@ -780,29 +789,60 @@ export function decorateMain(main) {
  * loads everything needed to get to LCP.
  */
 async function loadEager(doc) {
+  console.log('loadEager');
+  console.timeLog('page');
   const main = doc.querySelector('main');
   if (main) {
     decorateMain(main);
-    await waitForLCP();
+
+    document.querySelector('body').classList.add('appear');
+    // await waitForLCP();
   }
+}
+
+function showHelixUI() {
+  const url = new URL(window.location.href);
+  if (url.searchParams.get('ui') === 'helix') {
+    return true;
+  }
+
+  return window.localStorage.getItem('ui') === 'helix';
 }
 
 /**
  * loads everything that doesn't need to be delayed.
  */
 async function loadLazy(doc) {
+  console.log('loadLazy');
+  console.timeLog('page');
   await login();
 
-  // const main = doc.querySelector('main');
-  // await loadBlocks(main);
+  if (showHelixUI()) {
+    console.log('helix ui');
+    console.timeLog('page');
+    // classic helix-based UI
+    // loadCSS(`${window.hlx.codeBasePath}/styles/styles.css`);
 
-  // loadHeader(doc.querySelector('header'));
-  // loadFooter(doc.querySelector('footer'));
+    const main = doc.querySelector('main');
+    await loadBlocks(main);
 
-  // loadCSS(`${window.hlx.codeBasePath}/styles/lazy-styles.css`);
-  // load typekit adobe clean font
-  loadCSS(`https://use.typekit.net/dsd0vdr.css`);
-  
+    loadHeader(doc.querySelector('header'));
+    loadFooter(doc.querySelector('footer'));
+
+    loadCSS(`${window.hlx.codeBasePath}/styles/lazy-styles.css`);
+  } else {
+    console.log('react UI');
+    console.timeLog('page');
+    // react UI
+    unloadCSS(`${window.hlx.codeBasePath}/styles/styles.css`);
+
+    await import('../assets/index.9e150c52.js');
+    loadCSS('/assets/index.afa506da.css');
+
+    // load typekit adobe clean font
+    loadCSS('https://use.typekit.net/dsd0vdr.css');
+  }
+
   addFavIcon(`${window.hlx.codeBasePath}/styles/favicon.svg`);
 }
 
