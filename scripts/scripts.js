@@ -802,13 +802,13 @@ function loadSynchronous() {
   } else {
     // react UI
 
-    loadCSS(`${window.hlx.codeBasePath}/assets/index.afa506da.css`);
+    // loadCSS(`${window.hlx.codeBasePath}/assets/index.afa506da.css`);
     // unloadCSS(`${window.hlx.codeBasePath}/styles/styles.css`);
 
     // load typekit adobe clean font
     loadCSS('https://use.typekit.net/dsd0vdr.css');
 
-    import('../assets/index.9e150c52.js');
+    // import('../assets/index.9e150c52.js');
   }
 }
 
