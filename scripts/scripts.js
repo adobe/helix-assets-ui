@@ -10,12 +10,13 @@
  * governing permissions and limitations under the License.
  */
 
+/* eslint-disable padded-blocks */
+
 /**
  * log RUM if part of the sample.
  * @param {string} checkpoint identifies the checkpoint in funnel
  * @param {Object} data additional data for RUM sample
  */
-
 export function sampleRUM(checkpoint, data = {}) {
   try {
     window.hlx = window.hlx || {};
@@ -566,6 +567,8 @@ async function waitForLCP() {
  */
 async function loadPage(doc) {
   // eslint-disable-next-line no-use-before-define
+  loadSynchronous(doc);
+  // eslint-disable-next-line no-use-before-define
   await loadEager(doc);
   // eslint-disable-next-line no-use-before-define
   await loadLazy(doc);
@@ -621,6 +624,11 @@ window.onerror = (event, source, line) => {
   }
 };
 
+if (new URL(window.location.href).searchParams.get('ui') === 'helix'
+    || window.localStorage.getItem('ui') === 'helix') {
+  window.ui = 'helix';
+}
+
 loadPage(document);
 
 window.addURLStateChangeListener = (listener) => {
@@ -663,6 +671,53 @@ function buildFilterBlock(main) {
   const filterdiv = document.createElement('h2');
   filterdiv.innerHTML = 'Filters';
   wrapperdiv.prepend(buildBlock('filters', { elems: [filterdiv] }));
+}
+
+function loadHeader(header) {
+  const headerBlock = buildBlock('header', '');
+  header.append(headerBlock);
+  decorateBlock(headerBlock);
+  loadBlock(headerBlock);
+}
+
+function loadFooter(footer) {
+  return (footer);
+  /*
+  const footerBlock = buildBlock('footer', '');
+  footer.append(footerBlock);
+  decorateBlock(footerBlock);
+  loadBlock(footerBlock);
+  */
+}
+
+/**
+ * Builds all synthetic blocks in a container element.
+ * @param {Element} main The container element
+ */
+function buildAutoBlocks(main) {
+  try {
+    buildHeroBlock(main);
+    buildFilterBlock(main);
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('Auto Blocking failed', error);
+  }
+}
+
+/**
+ * Decorates the main element.
+ * @param {Element} main The main element
+ */
+export function decorateMain(main) {
+  // forward compatible pictures redecoration
+  decoratePictures(main);
+  // forward compatible link rewriting
+  makeLinksRelative(main);
+  buildAutoBlocks(main);
+  decorateSections(main);
+  decorateBlocks(main);
+  // sample blocks
+  sampleRUM.observe(main.querySelectorAll('div[data-block-name]'));
 }
 
 async function testAlgoliaConnection(tenant, apiKey) {
@@ -736,88 +791,52 @@ async function login() {
   }
 }
 
-function loadHeader(header) {
-  const headerBlock = buildBlock('header', '');
-  header.append(headerBlock);
-  decorateBlock(headerBlock);
-  loadBlock(headerBlock);
-}
+// dynamically load js and CSS immediately (depends on UI selection)
+function loadSynchronous() {
+  if (window.ui === 'helix') {
+    // classic helix-based UI
 
-function loadFooter(footer) {
-  return (footer);
-  /*
-  const footerBlock = buildBlock('footer', '');
-  footer.append(footerBlock);
-  decorateBlock(footerBlock);
-  loadBlock(footerBlock);
-  */
-}
+    loadCSS(`${window.hlx.codeBasePath}/styles/styles.css`);
+    // unloadCSS(`${window.hlx.codeBasePath}/assets/index.afa506da.css`);
 
-/**
- * Builds all synthetic blocks in a container element.
- * @param {Element} main The container element
- */
-function buildAutoBlocks(main) {
-  try {
-    buildHeroBlock(main);
-    buildFilterBlock(main);
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error('Auto Blocking failed', error);
+  } else {
+    // react UI
+
+    loadCSS(`${window.hlx.codeBasePath}/assets/index.afa506da.css`);
+    // unloadCSS(`${window.hlx.codeBasePath}/styles/styles.css`);
+
+    // load typekit adobe clean font
+    loadCSS('https://use.typekit.net/dsd0vdr.css');
+
+    import('../assets/index.9e150c52.js');
   }
-}
-
-/**
- * Decorates the main element.
- * @param {Element} main The main element
- */
-export function decorateMain(main) {
-  // forward compatible pictures redecoration
-  decoratePictures(main);
-  // forward compatible link rewriting
-  makeLinksRelative(main);
-  buildAutoBlocks(main);
-  decorateSections(main);
-  decorateBlocks(main);
-  // sample blocks
-  sampleRUM.observe(main.querySelectorAll('div[data-block-name]'));
 }
 
 /**
  * loads everything needed to get to LCP.
  */
 async function loadEager(doc) {
-  const main = doc.querySelector('main');
-  if (main) {
-    decorateMain(main);
+  await login();
 
-    document.querySelector('body').classList.add('appear');
-    // await waitForLCP();
+  if (window.ui === 'helix') {
+    // classic helix-based UI
+
+    const main = doc.querySelector('main');
+    if (main) {
+      decorateMain(main);
+      await waitForLCP();
+    }
+
+    // note: more will happen in loadLazy()
   }
-}
-
-function showHelixUI() {
-  const url = new URL(window.location.href);
-  if (url.searchParams.get('ui') === 'helix') {
-    return true;
-  }
-
-  return window.localStorage.getItem('ui') === 'helix';
-}
-
-if (showHelixUI()) {
-  window.ui = 'helix';
 }
 
 /**
  * loads everything that doesn't need to be delayed.
  */
 async function loadLazy(doc) {
-  await login();
-
   if (window.ui === 'helix') {
     // classic helix-based UI
-    unloadCSS(`${window.hlx.codeBasePath}/assets/index.afa506da.css`);
 
     const main = doc.querySelector('main');
     await loadBlocks(main);
@@ -826,15 +845,9 @@ async function loadLazy(doc) {
     loadFooter(doc.querySelector('footer'));
 
     loadCSS(`${window.hlx.codeBasePath}/styles/lazy-styles.css`);
-  } else {
-    // react UI
-    unloadCSS(`${window.hlx.codeBasePath}/styles/styles.css`);
-
-    // load typekit adobe clean font
-    loadCSS('https://use.typekit.net/dsd0vdr.css');
   }
 
-  addFavIcon(`${window.hlx.codeBasePath}/styles/favicon.svg`);
+  // addFavIcon(`${window.hlx.codeBasePath}/styles/favicon.svg`);
 }
 
 /**
