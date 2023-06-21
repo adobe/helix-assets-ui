@@ -737,14 +737,7 @@ async function login() {
 
   // tenant
 
-  // fallback - Adobe (public)
-  window.tenant = 'adobe';
-  window.tenantTitle = 'Assets Across Adobe';
-  window.tenantLogo = '/styles/adobe.svg';
-  window.tenantDomains = ['www.adobe.com', 'blog.adobe.com'];
-
   const domain = window.location.hostname;
-  // const m = domain.match(/(.*)\.hlx\.media/);
   const m = domain.match(/(.*)_hlx_media--helix-assets-ui--adobe\.hlx\.(live|page)/);
   if (m) {
     // pilot customer domains
@@ -755,8 +748,15 @@ async function login() {
     const tenant = new URL(window.location.href).searchParams.get('tenant');
     if (tenant) {
       window.tenant = tenant;
+    } else {
+      // fallback - Adobe (public)
+      window.tenant = 'adobe';
     }
   }
+
+  window.tenantTitle = 'Assets Across Adobe';
+  window.tenantLogo = '/styles/adobe.svg';
+  window.tenantDomains = ['www.adobe.com', 'blog.adobe.com'];
 
   // api key (password)
 
