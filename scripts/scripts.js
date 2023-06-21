@@ -738,7 +738,7 @@ async function login() {
   // tenant
 
   const domain = window.location.hostname;
-  const m = domain.match(/(.*)\.hlx\.media/);
+  const m = domain.match(/(.*)_hlx_media--helix-assets-ui--adobe\.hlx\.(live|page)/);
   if (m) {
     // pilot customer domains
     // eslint-disable-next-line prefer-destructuring
@@ -749,7 +749,7 @@ async function login() {
     if (tenant) {
       window.tenant = tenant;
     } else {
-      // fallback - original site
+      // fallback - Adobe (public)
       window.tenant = 'adobe';
     }
   }
