@@ -15,15 +15,15 @@
 
 These require a password (read only algolia api token).
 
-- Adobe https://adobe.hlx.media (public, no login)
-- Testcustomer https://testcustomer.hlx.media
-- BestBuy https://bestbuy.hlx.media
-- Disney https://disney.hlx.media
+- [Adobe](https://adobe_hlx_media--helix-assets-ui--adobe.hlx.live) ~~https://adobe.hlx.media~~ (public, no login)
+- [Testcustomer](https://testcustomer_hlx_media--helix-assets-ui--adobe.hlx.live) ~~https://testcustomer.hlx.media~~
+- [BestBuy](https://bestbuy_hlx_media--helix-assets-ui--adobe.hlx.live) ~~https://bestbuy.hlx.media~~
+- [Disney](https://disney_hlx_media--helix-assets-ui--adobe.hlx.live) ~~https://disney.hlx.media~~
 
 ### How to add a new customer
 
 1. Create branch from `main` named `<customer>_hlx_media`
-2. This should automatically create `https://<customer>.hlx.media`
+2. This automatically creates `https://<customer>_hlx_media--helix-assets-ui--adobe.hlx.live>` ~~`https://<customer>.hlx.media`~~
 3. On the `<customer>_hlx_media` branch adjust the [scripts/scripts.js](scripts/scripts.js) for naming and branding
    * `window.tenantTitle`
    * `window.tenantLogo`
